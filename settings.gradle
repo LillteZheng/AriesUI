@@ -1,0 +1,2 @@
+include ':app', ':ariesuilib'
+rootProject.name='AriesUI'

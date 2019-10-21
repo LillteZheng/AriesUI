@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -36,7 +37,7 @@ public class ColorsGradient extends View {
      * logic
      */
     private Paint mPaint;
-    private float mCx = -1,mCy = -1;
+    private float mCx = -1, mCy = -1;
     private Paint mCirclePaint;
     private int mWidth;
     private int mHeight;
@@ -45,53 +46,56 @@ public class ColorsGradient extends View {
     private ColorGradientListener mListener;
     private int mCurrentColor;
     private int mLastWidth;
+    private Rect mRect;
 
     public ColorsGradient(Context context) {
-       this(context,null);
-   }
+        this(context, null);
+    }
 
-   public ColorsGradient(Context context, @Nullable AttributeSet attrs) {
-       this(context, attrs,0);
-   }
+    public ColorsGradient(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-   public ColorsGradient(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-       super(context, attrs, defStyleAttr);
+    public ColorsGradient(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
-       TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ColorsGradient);
-       mDefaultColor = ta.getColor(R.styleable.ColorsGradient_gra_default_color,Color.YELLOW);
-       mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorsGradient_gra_circle_radius,20);
-       ta.recycle();
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ColorsGradient);
+        mDefaultColor = ta.getColor(R.styleable.ColorsGradient_gra_default_color, Color.YELLOW);
+        mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorsGradient_gra_circle_radius, 20);
+        ta.recycle();
 
-       setClickable(true);
-       mCurrentColor = mDefaultColor;
-   }
+        setClickable(true);
+        mCurrentColor = mDefaultColor;
+
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+    }
 
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
+        mRect = new Rect(0, 0, w, h);
         if (mCx == -1) {
-            mCx = w * 1.0f - mCircleRadius/2;
-        }else{
+            mCx = mRect.right;
+        } else {
             mCx = mCx * w / mLastWidth;
         }
         if (mCy == -1) {
-            mCy = mCircleRadius/2;
+            mCy = mRect.top;
         }
-        Rect rect = new Rect(0,0 , w, h);
-        LinearGradient black  = new LinearGradient(rect.left, rect.top, rect.left, rect.bottom,
+        LinearGradient black = new LinearGradient(mRect.left, mRect.top, mRect.left, mRect.bottom,
                 Color.WHITE, Color.BLACK, Shader.TileMode.CLAMP);
-        LinearGradient gradient = new LinearGradient(rect.left, rect.top, rect.right, rect.top,
+        LinearGradient gradient = new LinearGradient(mRect.left, mRect.top, mRect.right, mRect.top,
                 Color.WHITE, mDefaultColor, Shader.TileMode.CLAMP);
-        ComposeShader shader = new ComposeShader(black,gradient, PorterDuff.Mode.MULTIPLY);
+        ComposeShader shader = new ComposeShader(black, gradient, PorterDuff.Mode.MULTIPLY);
         mPaint.setShader(shader);
 
-        mBitmap = Bitmap.createBitmap(w,h, Bitmap.Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
-        mCanvas.drawRect(rect,mPaint);
+        mCanvas.drawRect(mRect, mPaint);
+        Log.d(TAG, "zsr - onSizeChanged: "+w+" "+mRect.right+" "+mCircleRadius+" "+mCx+" "+mCy+" "+mBitmap.getWidth());
 
         mCirclePaint = new Paint();
         mCirclePaint.setAntiAlias(true);
@@ -107,12 +111,11 @@ public class ColorsGradient extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(mBitmap,0,0,null);
+        canvas.drawBitmap(mBitmap, 0, 0, null);
         //画小球
         canvas.drawCircle(mCx, mCy, mCircleRadius, mCirclePaint);
 
     }
-
 
 
     @Override
@@ -126,50 +129,57 @@ public class ColorsGradient extends View {
 
     /**
      * 拿到某个像素点的颜色值
+     *
      * @param event
      */
     private void getPointColor(MotionEvent event) {
         mCx = (int) event.getX();
         mCy = (int) event.getY();
         //边界限定
-        if (mCx > mWidth){
-            mCx = mWidth;
+        if (mCx >= mRect.right) {
+            mCx = mRect.right;
         }
-        if (mCx < 0){
-            mCx = 0;
+        if (mCx <= mRect.left) {
+            mCx = mRect.left;
         }
-        if (mCy < 0){
-            mCy = 0;
+        if (mCy <= mRect.top) {
+            mCy = mRect.top;
         }
-        if (mCy > mHeight){
-            mCy = mHeight;
+        if (mCy >= mRect.bottom) {
+            mCy = mRect.bottom;
         }
-        int x = (int) (mCx * mBitmap.getWidth() *1.0f/mWidth);
-        int y = (int) (mCy * mBitmap.getHeight() *1.0f/mHeight);
-
-        try {
-            if (mCx <= OFFSET && mCy <= OFFSET){
-                mCurrentColor = Color.WHITE;
-            }else if (mCx == mBitmap.getWidth() -OFFSET && mCy <= OFFSET){
-                mCurrentColor = mDefaultColor;
-            }else if (mCy >= mBitmap.getHeight() - OFFSET){
-                mCurrentColor = Color.BLACK;
-            }else {
-                mCurrentColor = mBitmap.getPixel(x, y);
-            }
-            if (mListener != null){
-                mListener.onGetColor(mCurrentColor);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        int x = (int) mCx;
+        int y = (int) mCy;
+        if (mRect.contains(x,y)){
+            showColor(x,y);
         }
         invalidate();
+    }
+
+    /**
+     * 显示颜色
+     * @param x
+     * @param y
+     */
+    private void showColor(int x, int y) {
+        if (mCx <= OFFSET && mCy <= OFFSET){
+            mCurrentColor = Color.WHITE;
+        }else if (mCx >= mRect.right - 10 * OFFSET && mCy <= 10 *OFFSET){
+            mCurrentColor = mDefaultColor;
+        }else if (mCy >= mRect.bottom - 2 * OFFSET){
+            mCurrentColor = Color.BLACK;
+        }else {
+            mCurrentColor = mBitmap.getPixel(x, y);
+        }
+        if (mListener != null) {
+            mListener.onGetColor(mCurrentColor);
+        }
     }
 
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle){
+        if (state instanceof Bundle) {
             Bundle bundle = (Bundle) state;
             mCurrentColor = bundle.getInt("color");
             mCircleRadius = bundle.getInt("radius");
@@ -187,36 +197,38 @@ public class ColorsGradient extends View {
         Bundle state = new Bundle();
         state.putParcelable("instanceState", super.onSaveInstanceState());
         state.putInt("color", mCurrentColor);
-        state.putInt("radius",mCircleRadius);
-        state.putFloat("cx",mCx);
-        state.putFloat("cy",mCy);
-        state.putInt("width",mBitmap.getWidth());
+        state.putInt("radius", mCircleRadius);
+        state.putFloat("cx", mCx);
+        state.putFloat("cy", mCy);
+        state.putInt("width", mBitmap.getWidth());
         return state;
     }
 
-    public interface ColorGradientListener{
+    public interface ColorGradientListener {
         void readyToShow(int color);
+
         void onGetColor(int color);
     }
 
-    public ColorsGradient addListener(ColorGradientListener listener){
+    public ColorsGradient addListener(ColorGradientListener listener) {
         mListener = listener;
         return this;
     }
 
-    public ColorsGradient color(int color){
+    public ColorsGradient color(int color) {
         mDefaultColor = color;
         mCurrentColor = mDefaultColor;
         invalidate();
         return this;
     }
-    public ColorsGradient radiuds(int radiuds){
+
+    public ColorsGradient radiuds(int radiuds) {
         mCircleRadius = radiuds;
         invalidate();
         return this;
     }
 
-    public int  getColor(){
+    public int getColor() {
         return mCurrentColor;
     }
 
@@ -227,7 +239,6 @@ public class ColorsGradient extends View {
         mHeight = AriesUtils.measureWidth(heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
     }
-
 
 
 }

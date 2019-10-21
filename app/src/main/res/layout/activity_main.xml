@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFEFE"
+    android:background="#60C07A"
     android:clipChildren="false"
     android:orientation="vertical">
 
@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:gra_default_color="#FF0000"
+        android:layout_margin="10dp"
         app:gra_circle_radius="10dp"
         />
 
@@ -20,7 +21,6 @@
         android:id="@+id/test"
         android:layout_width="match_parent"
         android:textColor="#343232"
-        android:layout_marginTop="10dp"
         android:layout_height="200dp"
         />
     <TextView

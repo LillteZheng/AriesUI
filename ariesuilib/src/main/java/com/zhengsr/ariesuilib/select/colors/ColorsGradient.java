@@ -20,8 +20,12 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zhengsr.ariesuilib.R;
+import com.zhengsr.ariesuilib.select.colors.callback.ColorSelectLiseter;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
-
+/**
+ * @auther by zhengshaorui on 2019/10/22
+ * describe: 颜色渐变
+ */
 public class ColorsGradient extends View {
     private static final String TAG = "ColorsGradient";
     /**
@@ -43,10 +47,12 @@ public class ColorsGradient extends View {
     private int mHeight;
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private ColorGradientListener mListener;
+    private ColorSelectLiseter mListener;
     private int mCurrentColor;
     private int mLastWidth;
     private Rect mRect;
+    private LinearGradient mDefaultGradient;
+    private LinearGradient mChangeGradient;
 
     public ColorsGradient(Context context) {
         this(context, null);
@@ -85,17 +91,16 @@ public class ColorsGradient extends View {
         if (mCy == -1) {
             mCy = mRect.top;
         }
-        LinearGradient black = new LinearGradient(mRect.left, mRect.top, mRect.left, mRect.bottom,
+        mDefaultGradient = new LinearGradient(mRect.left, mRect.top, mRect.left, mRect.bottom,
                 Color.WHITE, Color.BLACK, Shader.TileMode.CLAMP);
-        LinearGradient gradient = new LinearGradient(mRect.left, mRect.top, mRect.right, mRect.top,
+        mChangeGradient = new LinearGradient(mRect.left, mRect.top, mRect.right, mRect.top,
                 Color.WHITE, mDefaultColor, Shader.TileMode.CLAMP);
-        ComposeShader shader = new ComposeShader(black, gradient, PorterDuff.Mode.MULTIPLY);
+        ComposeShader shader = new ComposeShader(mDefaultGradient, mChangeGradient, PorterDuff.Mode.MULTIPLY);
         mPaint.setShader(shader);
 
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
         mCanvas.drawRect(mRect, mPaint);
-        Log.d(TAG, "zsr - onSizeChanged: "+w+" "+mRect.right+" "+mCircleRadius+" "+mCx+" "+mCy+" "+mBitmap.getWidth());
 
         mCirclePaint = new Paint();
         mCirclePaint.setAntiAlias(true);
@@ -204,13 +209,8 @@ public class ColorsGradient extends View {
         return state;
     }
 
-    public interface ColorGradientListener {
-        void readyToShow(int color);
 
-        void onGetColor(int color);
-    }
-
-    public ColorsGradient addListener(ColorGradientListener listener) {
+    public ColorsGradient addListener(ColorSelectLiseter listener) {
         mListener = listener;
         return this;
     }
@@ -218,7 +218,13 @@ public class ColorsGradient extends View {
     public ColorsGradient color(int color) {
         mDefaultColor = color;
         mCurrentColor = mDefaultColor;
-        invalidate();
+        if (mPaint != null){
+            mChangeGradient = new LinearGradient(mRect.left, mRect.top, mRect.right, mRect.top,
+                    Color.WHITE, mDefaultColor, Shader.TileMode.CLAMP);
+            mPaint.setShader(new ComposeShader(mDefaultGradient,mChangeGradient, PorterDuff.Mode.MULTIPLY));
+            mCanvas.drawRect(mRect,mPaint);
+            invalidate();
+        }
         return this;
     }
 
@@ -236,7 +242,7 @@ public class ColorsGradient extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mWidth = AriesUtils.measureWidth(widthMeasureSpec);
-        mHeight = AriesUtils.measureWidth(heightMeasureSpec);
+        mHeight = AriesUtils.measureHeight(heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
     }
 

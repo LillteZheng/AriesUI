@@ -17,8 +17,8 @@ import android.view.View;
  */
 public class ColorsView extends View {
 
-    private Paint paint;
-    private Rect rect;
+    private Paint mPaint;
+    private Rect mRect;
 
     public ColorsView(Context context) {
         this(context,null);
@@ -30,27 +30,28 @@ public class ColorsView extends View {
 
     public ColorsView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setClickable(true);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        rect = new Rect(0,0,w,h);
+        mRect = new Rect(0,0,w,h);
         int[] hue = new int[361];
         int count = 0;
         for (int i = hue.length - 1; i >= 0; i--,count++) {
             hue[count] = Color.HSVToColor(new float[]{i,1f,1f});
         }
-        LinearGradient linearGradient = new LinearGradient(rect.left, rect.top,
-                rect.left, rect.bottom,hue,null, Shader.TileMode.CLAMP);
-        paint = new Paint();
-        paint.setShader(linearGradient);
+        LinearGradient linearGradient = new LinearGradient(mRect.left, mRect.top,
+                mRect.left, mRect.bottom,hue,null, Shader.TileMode.CLAMP);
+        mPaint = new Paint();
+        mPaint.setShader(linearGradient);
 
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRect(rect,paint);
+        canvas.drawRect(mRect, mPaint);
     }
 }

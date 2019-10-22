@@ -8,27 +8,16 @@
     android:clipChildren="false"
     android:orientation="vertical">
 
-    <com.zhengsr.ariesuilib.select.colors.ColorsGradient
-        android:id="@+id/colors"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:gra_default_color="#FF0000"
-        android:layout_margin="10dp"
-        app:gra_circle_radius="10dp"
-        />
-
-    <View
-        android:id="@+id/test"
-        android:layout_width="match_parent"
-        android:textColor="#343232"
-        android:layout_height="200dp"
-        />
-    <TextView
-        android:id="@+id/testview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <com.zhengsr.ariesui.ColorsView
-        android:layout_width="20dp"
-        android:layout_height="100dp"/>
+  <com.zhengsr.ariesuilib.select.colors.ColorsSelectView
+      android:layout_width="match_parent"
+      android:layout_margin="10dp"
+      android:layout_height="wrap_content"
+      app:color_gradient_height="200dp"
+      app:color_mulcolor_height="30dp"
+      app:color_circle_size="8dp"
+      app:color_textly_height="40dp"
+      app:color_text_size="18sp"
+      app:color_text_color="#ffffff"
+      />
 
 </LinearLayout>

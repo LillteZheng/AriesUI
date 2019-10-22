@@ -4,4 +4,13 @@
         <attr name="gra_default_color" format="color|reference|integer"/>
         <attr name="gra_circle_radius" format="integer|dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="ColorsSelectView">
+        <attr name="color_gradient_height" format="dimension|integer"/>
+        <attr name="color_mulcolor_height" format="dimension|integer"/>
+        <attr name="color_circle_size" format="dimension|integer"/>
+        <attr name="color_textly_height" format="dimension|integer"/>
+        <attr name="color_text_color" format="color|reference"/>
+        <attr name="color_text_size" format="dimension|integer"/>
+    </declare-styleable>
 </resources>

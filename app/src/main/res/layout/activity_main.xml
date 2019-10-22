@@ -27,5 +27,8 @@
         android:id="@+id/testview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <com.zhengsr.ariesui.ColorsView
+        android:layout_width="20dp"
+        android:layout_height="100dp"/>
 
 </LinearLayout>

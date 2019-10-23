@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -68,6 +67,7 @@ public class ColorsGradient extends View {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ColorsGradient);
         mDefaultColor = ta.getColor(R.styleable.ColorsGradient_gra_default_color, Color.YELLOW);
         mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorsGradient_gra_circle_radius, 20);
+        int circleColor = ta.getColor(R.styleable.ColorsGradient_gra_circle_color,Color.WHITE);
         ta.recycle();
 
         setClickable(true);
@@ -76,6 +76,12 @@ public class ColorsGradient extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
+
+        mCirclePaint = new Paint();
+        mCirclePaint.setAntiAlias(true);
+        mCirclePaint.setStrokeWidth(2);
+        mCirclePaint.setColor(circleColor);
+        mCirclePaint.setStyle(Paint.Style.STROKE);
     }
 
 
@@ -102,11 +108,7 @@ public class ColorsGradient extends View {
         mCanvas = new Canvas(mBitmap);
         mCanvas.drawRect(mRect, mPaint);
 
-        mCirclePaint = new Paint();
-        mCirclePaint.setAntiAlias(true);
-        mCirclePaint.setStrokeWidth(2);
-        mCirclePaint.setColor(Color.WHITE);
-        mCirclePaint.setStyle(Paint.Style.STROKE);
+
         if (mListener != null) {
             mListener.readyToShow(mCurrentColor);
         }
@@ -223,15 +225,21 @@ public class ColorsGradient extends View {
                     Color.WHITE, mDefaultColor, Shader.TileMode.CLAMP);
             mPaint.setShader(new ComposeShader(mDefaultGradient,mChangeGradient, PorterDuff.Mode.MULTIPLY));
             mCanvas.drawRect(mRect,mPaint);
-            invalidate();
         }
         return this;
     }
 
     public ColorsGradient radiuds(int radiuds) {
         mCircleRadius = radiuds;
-        invalidate();
         return this;
+    }
+    public ColorsGradient circleColor(int circleColor){
+        mCirclePaint.setColor(circleColor);
+        return this;
+    }
+
+    public void go(){
+        invalidate();
     }
 
     public int getColor() {

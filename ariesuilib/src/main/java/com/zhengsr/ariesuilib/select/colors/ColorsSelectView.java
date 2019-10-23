@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,7 +21,20 @@ import com.zhengsr.ariesuilib.select.colors.callback.ColorSelectLiseter;
  */
 public class ColorsSelectView extends FrameLayout {
     private static final String TAG = "ColorsSelectView";
+    /**
+     * static
+     */
+    public static final int RECT = 1;
+    public static final int TRI = 2;
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
+    public static final int TOP = 3;
+    public static final int BOTTOM = 4;
     private ColorListener mLiseter;
+    private MultiColors mMulColors;
+    private ColorsGradient mColorsGradient;
+    private int mColor;
+
     public ColorsSelectView(Context context) {
         this(context,null);
     }
@@ -50,8 +61,8 @@ public class ColorsSelectView extends FrameLayout {
         addView(view);
         setClipChildren(false);
 
-        final ColorsGradient colorsGradient = view.findViewById(R.id.colorgradient);
-        RectColors rectColors = view.findViewById(R.id.rectcolor);
+        mColorsGradient = view.findViewById(R.id.colorgradient);
+        mMulColors = view.findViewById(R.id.rectcolor);
         final View backView = view.findViewById(R.id.view);
         final TextView textView = view.findViewById(R.id.textview);
         LinearLayout linearLayout = view.findViewById(R.id.color_ly);
@@ -59,31 +70,33 @@ public class ColorsSelectView extends FrameLayout {
          * logic
          */
         if (circleSize != -1){
-            colorsGradient.radiuds(circleSize);
+            mColorsGradient.radiuds(circleSize);
         }
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
         textView.setTextColor(textColor);
-        rectColors.addListener(new ColorSelectLiseter() {
+        mMulColors.addListener(new ColorSelectLiseter() {
             @Override
             public void readyToShow(int color) {
-                colorsGradient.color(color);
+                mColorsGradient.color(color);
                 backView.setBackgroundColor(color);
                 String colorMsg = "#"+Integer.toHexString(color).toUpperCase();
                 textView.setText(colorMsg);
+                mColor = color;
             }
 
             @Override
             public void onGetColor(int color) {
-                colorsGradient.color(color);
+                mColorsGradient.color(color);
                 if (mLiseter != null) {
                     mLiseter.onColor(color);
                 }
+                mColor = color;
                 String colorMsg = "#"+Integer.toHexString(color).toUpperCase();
                 textView.setText(colorMsg);
                 backView.setBackgroundColor(color);
             }
         });
-        colorsGradient.addListener(new ColorSelectLiseter() {
+        mColorsGradient.addListener(new ColorSelectLiseter() {
             @Override
             public void readyToShow(int color) {
 
@@ -91,6 +104,7 @@ public class ColorsSelectView extends FrameLayout {
 
             @Override
             public void onGetColor(int color) {
+                mColor = color;
                 if (mLiseter != null) {
                     mLiseter.onColor(color);
                 }
@@ -102,10 +116,10 @@ public class ColorsSelectView extends FrameLayout {
 
         //设置间距
         if (gradientHeight != -1) {
-            setDimen(colorsGradient, gradientHeight);
+            setDimen(mColorsGradient, gradientHeight);
         }
         if (mulColorHeight != -1) {
-            setDimen(rectColors, mulColorHeight);
+            setDimen(mMulColors, mulColorHeight);
         }
         if (colorLyHeight != -1){
             setDimen(linearLayout,colorLyHeight);
@@ -115,17 +129,58 @@ public class ColorsSelectView extends FrameLayout {
 
     }
 
+
+
     public interface ColorListener{
         void onColor(int color);
     }
 
-    public void addListener(ColorListener liseter){
+    public ColorsSelectView addListener(ColorListener liseter){
         mLiseter = liseter;
+        return this;
     }
-
     private void setDimen(View view,int height){
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.height = height;
         view.setLayoutParams(params);
     }
+
+
+    public ColorsSelectView type(int type){
+        mMulColors.type(type);
+        return this;
+    }
+    public ColorsSelectView typeColor(int typeColor){
+        mMulColors.typeColor(typeColor);
+        return this;
+    }
+
+    public ColorsSelectView triSize(int triSize){
+        mMulColors.triSize(triSize);
+        return this;
+    }
+
+    public ColorsSelectView triOritation(int triOritation){
+        mMulColors.triOritation(triOritation);
+        return this;
+    }
+
+    public ColorsSelectView circleColor(int circleColor){
+        mColorsGradient.circleColor(circleColor);
+        return this;
+    }
+    public ColorsSelectView circleRadius(int circleRadius){
+        mColorsGradient.radiuds(circleRadius);
+        return this;
+    }
+
+    public void go() {
+        mMulColors.go();
+        mColorsGradient.go();
+    }
+
+    public int getColor(){
+        return mColor;
+    }
+
 }

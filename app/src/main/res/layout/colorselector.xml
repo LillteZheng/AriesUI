@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clipChildren="false"
+    android:background="#C0BFBF"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#323232"
+        android:layout_margin="5dp"
+        android:text="颜色选择"/>
+
+    <com.zhengsr.ariesuilib.select.colors.ColorsSelectView
+        android:id="@+id/colorselector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:color_gradient_height="150dp"
+        app:color_text_size="14sp"
+        app:color_text_color="#323232"
+        app:color_circle_size="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+  />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="end"
+        >
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:text="取消"/>
+        <Button
+            android:id="@+id/confirm"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="70dp"
+            android:text="确定"/>
+
+
+    </FrameLayout>
+</LinearLayout>

@@ -79,7 +79,7 @@ public class ColorsGradient extends View {
 
         mCirclePaint = new Paint();
         mCirclePaint.setAntiAlias(true);
-        mCirclePaint.setStrokeWidth(2);
+        mCirclePaint.setStrokeWidth(3);
         mCirclePaint.setColor(circleColor);
         mCirclePaint.setStyle(Paint.Style.STROKE);
     }
@@ -249,8 +249,8 @@ public class ColorsGradient extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mWidth = AriesUtils.measureWidth(widthMeasureSpec);
-        mHeight = AriesUtils.measureHeight(heightMeasureSpec);
+        mWidth = AriesUtils.getDefaultSize(100,widthMeasureSpec);
+        mHeight = AriesUtils.getDefaultSize(100,heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
     }
 

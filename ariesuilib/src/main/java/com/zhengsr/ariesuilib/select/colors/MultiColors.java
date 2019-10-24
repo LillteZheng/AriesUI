@@ -54,9 +54,17 @@ public class MultiColors extends View {
     private int mMove = 0;
     private boolean mIsVertical = true;
     private Path mPath;
+    private Path mLinePath;
+    private Paint mLinePaint;
+
+    /**
+     * attrs
+     */
     private int mType;
     private int mTriOritation;
     private int mTriSize;
+    private boolean mShowTriLine;
+
 
     public MultiColors(Context context) {
         this(context, null);
@@ -74,6 +82,7 @@ public class MultiColors extends View {
         int typeColor = ta.getColor(R.styleable.MultiColors_mul_type_color,Color.WHITE);
         mTriOritation = ta.getInteger(R.styleable.MultiColors_mul_tri_oritation, LEFT);
         mTriSize = ta.getDimensionPixelSize(R.styleable.MultiColors_mul_tri_size,14);
+        mShowTriLine = ta.getBoolean(R.styleable.MultiColors_mul_tri_show_line,false);
         ta.recycle();
 
         mPaint = new Paint();
@@ -81,10 +90,16 @@ public class MultiColors extends View {
         mTypePaint = new Paint();
         mTypePaint.setAntiAlias(true);
         mTypePaint.setColor(typeColor);
+        mTypePaint.setStrokeWidth(3);
         if (mType == RECT){
             mTypePaint.setStyle(Paint.Style.STROKE);
         }
-        mTypePaint.setStrokeWidth(2);
+
+        mLinePath = new Path();
+        mLinePaint = new Paint();
+        mLinePaint.setAntiAlias(true);
+        mLinePaint.setStyle(Paint.Style.STROKE);
+        mLinePaint.setColor(typeColor);
 
     }
 
@@ -113,23 +128,25 @@ public class MultiColors extends View {
         mCanvas = new Canvas(mBitmap);
         mCanvas.drawRect(mRect, mPaint);
         int offset = 2;
-        int var1 = (int) (mTriSize * 2.0f / 7);
-        int var2 = (int) (mTriSize * 5.0f / 7);
+        int var1 = (int) (mTriSize * 1.0f / 2);
         mPath = new Path();
         if (mIsVertical) {
             if (mType == RECT) {
                 mRoundRect = new RectF(mRect.left - offset, mRect.top, mRect.right + offset, mRoundSize);
             }else {
                 if (mTriOritation == LEFT) {
-                    mPath.moveTo(-var1, -mTriSize);
-                    mPath.lineTo(var2, 0);
-                    mPath.lineTo(-var1, mTriSize);
-                    mPath.close();
+                    mPath.moveTo( -4,-var1);
+                    mPath.lineTo(mTriSize, 0);
+                    mPath.lineTo(-4,var1);
+
                 }else{
-                    mPath.moveTo(mRect.right+var1, -mTriSize);
-                    mPath.lineTo(mRect.right - var2,0);
-                    mPath.lineTo(mRect.right+var1, mTriSize);
-                    mPath.close();
+                    mPath.moveTo(mRect.right+4, -var1);
+                    mPath.lineTo(mRect.right - mTriSize,0);
+                    mPath.lineTo(mRect.right+4, var1);
+                }
+                if (mShowTriLine) {
+                    mLinePath.moveTo(0, 0);
+                    mLinePath.lineTo(mRect.width(),0);
                 }
             }
         } else {
@@ -137,15 +154,21 @@ public class MultiColors extends View {
                 mRoundRect = new RectF(mRect.left, mRect.top - offset, mRoundSize, mRect.bottom + offset);
             }else {
                 if (mTriOritation == TOP) {
-                    mPath.moveTo(-mTriSize, -var1);
-                    mPath.lineTo(0, var2);
-                    mPath.lineTo(mTriSize, -var1);
-                    mPath.close();
+                    //稍微比矩形高出一点点
+                    mPath.moveTo(-var1,-4);
+                    mPath.lineTo(0,mTriSize);
+                    mPath.lineTo(var1,-4);
+
                 }else{
-                    mPath.moveTo(-mTriSize, mRect.bottom+var1);
-                    mPath.lineTo(0, mRect.bottom - var2);
-                    mPath.lineTo(mTriSize, mRect.bottom+var1);
-                    mPath.close();
+                    //稍微比矩形高出一点点
+                    mPath.moveTo(-var1,mRect.height()+4);
+                    mPath.lineTo(0,mRect.height() - mTriSize);
+                    mPath.lineTo(var1,mRect.height()+4);
+
+                }
+                if (mShowTriLine) {
+                    mLinePath.moveTo(0, 0);
+                    mLinePath.lineTo(0, mRect.height());
                 }
             }
         }
@@ -158,7 +181,7 @@ public class MultiColors extends View {
         }
 
     }
-
+    
 
     public MultiColors triOritation(int triOritation){
         mTriOritation = triOritation;
@@ -181,10 +204,15 @@ public class MultiColors extends View {
         mTypePaint.setColor(mulTypeColor);
         return this;
     }
+    public MultiColors showTriLine(boolean showTriLine){
+        mShowTriLine = showTriLine;
+        return this;
+    }
     public MultiColors go(){
         invalidate();
         return this;
     }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -200,6 +228,9 @@ public class MultiColors extends View {
             canvas.drawRoundRect(mRoundRect, 2, 2, mTypePaint);
         }else {
             canvas.drawPath(mPath, mTypePaint);
+            if (mShowTriLine) {
+                canvas.drawPath(mLinePath, mLinePaint);
+            }
         }
         canvas.restore();
     }
@@ -288,8 +319,8 @@ public class MultiColors extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mWidth = AriesUtils.measureWidth(widthMeasureSpec);
-        mHeight = AriesUtils.measureHeight(heightMeasureSpec);
+        mWidth = AriesUtils.getDefaultSize(100,widthMeasureSpec);
+        mHeight = AriesUtils.getDefaultSize(100,heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
     }
 }

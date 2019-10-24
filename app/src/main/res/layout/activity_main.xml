@@ -13,5 +13,25 @@
         android:onClick="colorclick"
         android:text="颜色选择" />
 
+    <com.zhengsr.ariesui.AppTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试"/>
+
+    <com.zhengsr.ariesuilib.select.colors.ColorsGradient
+        android:layout_width="match_parent"
+        app:gra_default_color="@color/colorAccent"
+        android:layout_height="100dp"/>
+
+    <com.zhengsr.ariesuilib.select.colors.MultiColors
+        android:layout_width="20dp"
+        android:layout_height="200dp"
+        app:mul_type="rect"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        app:mul_tri_size="5dp"
+        app:mul_tri_show_line="true"
+        app:mul_tri_oritation="right"/>
+
 
 </LinearLayout>

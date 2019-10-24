@@ -19,6 +19,7 @@
             <enum name="bottom" value="4"/>
         </attr>
         <attr name="mul_tri_size" format="dimension|integer"/>
+        <attr name="mul_tri_show_line" format="boolean"/>
 
     </declare-styleable>
 

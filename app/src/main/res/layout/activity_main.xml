@@ -23,15 +23,12 @@
         app:gra_default_color="@color/colorAccent"
         android:layout_height="100dp"/>
 
-    <com.zhengsr.ariesuilib.select.colors.MultiColors
-        android:layout_width="20dp"
-        android:layout_height="200dp"
-        app:mul_type="rect"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        app:mul_tri_size="5dp"
-        app:mul_tri_show_line="true"
-        app:mul_tri_oritation="right"/>
+    <include
+        android:id="@+id/scan_ly"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_margin="100dp"
+        layout="@layout/scan_circle_layout"/>
 
 
 </LinearLayout>

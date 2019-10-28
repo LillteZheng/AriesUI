@@ -8,16 +8,32 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.zhengsr.ariesuilib.select.colors.ColorsSelectView;
+import com.zhengsr.ariesuilib.wieght.ScanView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private ScanView mScanView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mScanView = findViewById(R.id.scan);
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mScanView.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mScanView.stop();
     }
 
     private String mCurrentColor;

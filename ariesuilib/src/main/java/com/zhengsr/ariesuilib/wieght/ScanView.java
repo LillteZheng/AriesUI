@@ -1,5 +1,9 @@
 package com.zhengsr.ariesuilib.wieght;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,6 +23,9 @@ import android.view.animation.LinearInterpolator;
 import com.zhengsr.ariesuilib.R;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author by  zhengshaorui on 2019/10/8
  * Describe: 类似于雷达扫描的图
@@ -36,8 +43,12 @@ public class ScanView extends View {
     private int mScanColor;
     private Paint mDashPaint;
     private float mRotate;
-    private Paint mRandonPaint;
-    private boolean isRanDownAanmDone = true;
+    private Paint mRandomPaint;
+    private Paint mTestPaint;
+
+    private List<RandonCircle> mCircles = new ArrayList<>();
+    private ValueAnimator mSweepAnim;
+    private ValueAnimator mRandomAnim;
 
     public ScanView(Context context) {
         this(context,null);
@@ -49,6 +60,9 @@ public class ScanView extends View {
 
     public ScanView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ScanView);
+        mScanColor = ta.getColor(R.styleable.ScanView_scan_color,Color.WHITE);
+        ta.recycle();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -59,19 +73,25 @@ public class ScanView extends View {
         mArcPaint = new Paint();
         mArcPaint.setAntiAlias(true);
         mArcPaint.setColor(Color.GRAY);
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ScanView);
-        mScanColor = ta.getColor(R.styleable.ScanView_scan_color,Color.WHITE);
-        ta.recycle();
+
+
 
         mDashPaint = new Paint();
         mDashPaint.setAntiAlias(true);
         mDashPaint.setColor(Color.GRAY);
         mDashPaint.setPathEffect(new DashPathEffect(new float[]{5,5},5));
-        mRandonPaint = new Paint();
-        mRandonPaint.setAntiAlias(true);
-        mRandonPaint.setColor(Color.WHITE);
-    }
+        mRandomPaint = new Paint();
+        mRandomPaint.setAntiAlias(true);
+        mRandomPaint.setColor(Color.WHITE);
 
+
+        mTestPaint = new Paint();
+        mTestPaint.setAntiAlias(true);
+        mTestPaint.setStrokeWidth(20);
+        mTestPaint.setStyle(Paint.Style.STROKE);
+        mTestPaint.setColor(Color.RED);
+    }
+    private float mRandomOffset;
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -80,22 +100,23 @@ public class ScanView extends View {
         mRadius = w/2;
         mOffset = (int) (mRadius * 1.0f / 4);
         mRect = new RectF(0,0,w,h);
+
+
         int[] colors = {
 
                 Color.TRANSPARENT, changeAlpha(mScanColor, 0), changeAlpha(mScanColor, 168),
                 changeAlpha(mScanColor, 255), changeAlpha(mScanColor, 255)
         };
-        //mGradient = new SweepGradient(mRadius,mRadius,colors,null);
         mGradient = new SweepGradient(mRadius, mRadius,
-              colors, new float[]{0.0f, 0.6f, 0.99f, 0.998f, 1f});
+                colors, new float[]{0.0f, 0.6f, 0.99f, 0.998f, 1f});
 
         mArcPaint.setShader(mGradient);
 
-        ValueAnimator animator = ValueAnimator.ofFloat(0,360);
-        animator.setDuration(5000);
-        animator.setRepeatCount(-1);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mSweepAnim = ValueAnimator.ofFloat(0,360);
+        mSweepAnim.setDuration(5000);;
+        mSweepAnim.setRepeatCount(-1);
+        mSweepAnim.setInterpolator(new LinearInterpolator());
+        mSweepAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mRotate = (float) animation.getAnimatedValue();
@@ -103,9 +124,51 @@ public class ScanView extends View {
 
             }
         });
-        animator.start();
+
+        mRandomAnim = ValueAnimator.ofFloat(0,6);
+        mRandomAnim.setDuration(5000);
+        mRandomAnim.setRepeatCount(-1);
+        mRandomAnim.setInterpolator(new LinearInterpolator());
+        mRandomAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mRandomOffset = (float) animation.getAnimatedValue();
+                if (mRandomOffset == 6){
+                    mCircles.clear();
+                    generaateRandomCircle();
+                }
+            }
+        });
+        generaateRandomCircle();
+
+        if (!mRandomAnim.isRunning()){
+            mRandomAnim.start();
+        }
+        if (!mSweepAnim.isRunning()){
+            mSweepAnim.start();
+        }
 
 
+    }
+
+    private void generaateRandomCircle() {
+        //生成随机小球
+
+        int radius = 10;
+        int count = 0;
+
+        while (count < 4) {
+            int x = (int) (Math.random() * (mWidth - 2*radius));
+            int y = (int) (Math.random() * (mHeight - 2*radius));
+            if (isInCircle(x, y, radius)) {
+                count++;
+                RandonCircle circle = new RandonCircle();
+                circle.radius = radius;
+                circle.cx = x;
+                circle.cy = y;
+                mCircles.add(circle);
+            }
+        }
     }
 
     /**
@@ -142,14 +205,25 @@ public class ScanView extends View {
         canvas.rotate(mRotate,mRadius,mRadius);
         //画渐变扇形
         canvas.drawCircle(mRadius,mRadius,mRadius,mArcPaint);
-        //绘制一条线
-       // mPaint.setStrokeWidth(1.5f);
-
-       // canvas.drawLine(mRadius,mRadius,mWidth,mRadius,mPaint);
         canvas.restore();
 
-        drawRandonCircle(canvas);
+        //画圆点
+        for (RandonCircle circle : mCircles) {
+            float radius = circle.radius + mRandomOffset;
+            int alpha = (int) ((1 - mRandomOffset / 6) * 255);
+            //canvas.save();
+            mRandomPaint.setAlpha(alpha);
+            canvas.drawCircle(circle.cx,circle.cy,radius,mRandomPaint);
+        }
+
+        //画波纹
+        float radius = mRadius + mRandomOffset*10;
+        int alpha = (int) ((1 - mRandomOffset / 6) * 255);
+        mTestPaint.setAlpha(alpha);
+       // canvas.drawCircle(mRadius,mRadius,radius,mTestPaint);
     }
+
+
 
     /**
      * 画虚线
@@ -164,25 +238,7 @@ public class ScanView extends View {
         canvas.restore();
 
     }
-    private void drawRandonCircle(Canvas canvas){
-        //让小圆点随机出现
-        if (isRanDownAanmDone) {
-            isRanDownAanmDone = false;
-            int radius = 10;
-            int count = 0;
-            while (count < 4) {
-                int x = (int) (Math.random() * (mWidth - radius));
-                int y = (int) (Math.random() * (mHeight - radius));
-                if (isInCircle(x, y, radius)) {
-                    count++;
-                    Log.d(TAG, "zsr - drawRandonCircle: "+count);
-                    canvas.drawCircle(x, y, radius, mRandonPaint);
-                }
-            }
 
-        }
-
-    }
 
     private boolean isInCircle(int x,int y,int radius){
         return (mRadius-radius) > Math.sqrt((mRadius - x) * (mRadius - x) + (mRadius - y)*(mRadius - y));
@@ -193,5 +249,38 @@ public class ScanView extends View {
         mWidth = AriesUtils.getDefaultSize(200,widthMeasureSpec);
         mHeight = AriesUtils.getDefaultSize(200,heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
+    }
+
+
+    /**
+     * 一个生成圆点的类
+     */
+    class RandonCircle{
+        public float alpha = 200;
+        public float radius;
+        public float cx,cy;
+    }
+
+    public void start(){
+        Log.d(TAG, "zsr start: "+mRandomAnim);
+        if (mRandomAnim != null) {
+            mRandomAnim.start();
+        }
+        if (mSweepAnim != null) {
+            mSweepAnim.start();
+        }
+    }
+
+
+
+    public void stop(){
+        if (mRandomAnim != null) {
+            mRandomAnim.cancel();
+            mRandomAnim = null;
+        }
+        if (mSweepAnim != null) {
+            mSweepAnim.cancel();;
+            mSweepAnim = null;
+        }
     }
 }

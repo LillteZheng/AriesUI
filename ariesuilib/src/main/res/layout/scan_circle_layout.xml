@@ -4,20 +4,17 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:id="@+id/circcle1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/scan_circle"/>
     <ImageView
+        android:id="@+id/circcle2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/scan_circle"/>
-    <ImageView
+    <com.zhengsr.ariesuilib.wieght.ScanView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/scan_circle"/>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/scan_circle"/>
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

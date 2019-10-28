@@ -23,12 +23,11 @@
         app:gra_default_color="@color/colorAccent"
         android:layout_height="100dp"/>
 
-    <include
-        android:id="@+id/scan_ly"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:layout_margin="100dp"
-        layout="@layout/scan_circle_layout"/>
+   <com.zhengsr.ariesuilib.wieght.ScanView
+       android:layout_width="200dp"
+       android:layout_margin="40dp"
+       app:scan_color="#ff0000"
+       android:layout_height="200dp"/>
 
 
 </LinearLayout>

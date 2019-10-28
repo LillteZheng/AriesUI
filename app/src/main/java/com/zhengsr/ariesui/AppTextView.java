@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.util.AttributeSet;
-import android.util.Log;
 
 /**
  * @author by  zhengshaorui on 2019/10/8
@@ -29,7 +28,6 @@ public class AppTextView extends AppCompatTextView {
 
     public AppTextView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Log.d(TAG, "zsr - AppTextView: ");
         paint.setColor(Color.RED);
     }
 
@@ -42,7 +40,6 @@ public class AppTextView extends AppCompatTextView {
         bounds.right = layout.getLineRight(1);
         bounds.top = layout.getLineTop(1);
         bounds.bottom = layout.getLineBottom(1);
-        Log.d(TAG, "zsr - onDraw: "+bounds);
         canvas.drawRect(bounds, paint);
        /* bounds.left = layout.getLineLeft(layout.getLineCount() - 4);
         bounds.right = layout.getLineRight(layout.getLineCount() - 4);

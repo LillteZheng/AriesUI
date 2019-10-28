@@ -31,4 +31,8 @@
         <attr name="color_text_color" format="color|reference"/>
         <attr name="color_text_size" format="dimension|integer"/>
     </declare-styleable>
+
+    <declare-styleable name="ScanView">
+        <attr name="scan_color" format="color|reference"/>
+    </declare-styleable>
 </resources>

@@ -1,22 +1,15 @@
 package com.zhengsr.ariesuilib.wieght;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -24,6 +17,7 @@ import com.zhengsr.ariesuilib.R;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,23 +26,32 @@ import java.util.List;
  */
 public class ScanView extends View {
     private static final String TAG = "ScanView";
-    private Paint mPaint;
-    private Bitmap mBitmap;
     private int mOffset;
     private int mRadius;
     private int mWidth ,mHeight;
-    private RectF mRect;
-    private SweepGradient mGradient;
-    private Paint mArcPaint;
-    private int mScanColor;
-    private Paint mDashPaint;
+    private SweepGradient mSweepShader;
     private float mRotate;
-    private Paint mRandomPaint;
-    private Paint mTestPaint;
 
-    private List<RandonCircle> mCircles = new ArrayList<>();
+    private List<RandomCircle> mCircles = new ArrayList<>();
     private ValueAnimator mSweepAnim;
-    private ValueAnimator mRandomAnim;
+
+    private Paint mArcPaint;
+    private Paint mDashPaint;
+    private Paint mPaint;
+
+    /**
+     * attrs
+     */
+    private int mSweepTime ;
+    private int mSweepColor;
+    private int mRandomNum;
+    private int mRandomColor;
+    private int mCircleNum;
+    private boolean mIsShowRandom;
+    private boolean mIsShowDash;
+    private boolean mIsAnimAuto;
+    private int mCircleColor;
+    private int mDashColor;
 
     public ScanView(Context context) {
         this(context,null);
@@ -61,112 +64,92 @@ public class ScanView extends View {
     public ScanView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ScanView);
-        mScanColor = ta.getColor(R.styleable.ScanView_scan_color,Color.WHITE);
+        mSweepColor = ta.getColor(R.styleable.ScanView_scan_sweep_color,Color.WHITE);
+        mSweepTime = ta.getInteger(R.styleable.ScanView_scan_sweep_time,4000);
+        mRandomNum = ta.getInteger(R.styleable.ScanView_scan_random_num,4);
+        mRandomColor = ta.getColor(R.styleable.ScanView_scan_random_color,Color.WHITE);
+        mCircleColor = ta.getColor(R.styleable.ScanView_scan_circle_color,Color.WHITE);
+        mCircleNum = ta.getInteger(R.styleable.ScanView_scan_circle_num,4);
+        mIsShowRandom = ta.getBoolean(R.styleable.ScanView_scan_show_random,true);
+        mIsShowDash = ta.getBoolean(R.styleable.ScanView_scan_show_dash,true);
+        mIsAnimAuto = ta.getBoolean(R.styleable.ScanView_scan_anim_auto,true);
+        mDashColor = ta.getColor(R.styleable.ScanView_scan_dash_color,Color.GRAY);
         ta.recycle();
+
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(mCircleColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(1.5f);
 
         mArcPaint = new Paint();
         mArcPaint.setAntiAlias(true);
-        mArcPaint.setColor(Color.GRAY);
-
-
 
         mDashPaint = new Paint();
         mDashPaint.setAntiAlias(true);
-        mDashPaint.setColor(Color.GRAY);
+        mDashPaint.setColor(mDashColor);
         mDashPaint.setPathEffect(new DashPathEffect(new float[]{5,5},5));
-        mRandomPaint = new Paint();
-        mRandomPaint.setAntiAlias(true);
-        mRandomPaint.setColor(Color.WHITE);
 
 
-        mTestPaint = new Paint();
-        mTestPaint.setAntiAlias(true);
-        mTestPaint.setStrokeWidth(20);
-        mTestPaint.setStyle(Paint.Style.STROKE);
-        mTestPaint.setColor(Color.RED);
     }
-    private float mRandomOffset;
+
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mBitmap = Bitmap.createBitmap(w,h, Bitmap.Config.ARGB_8888);
         //绘制圆
         mRadius = w/2;
-        mOffset = (int) (mRadius * 1.0f / 4);
-        mRect = new RectF(0,0,w,h);
+        mOffset = (int) (mRadius * 1.0f / mCircleNum);
 
-
+        //增加扫描弧度
         int[] colors = {
 
-                Color.TRANSPARENT, changeAlpha(mScanColor, 0), changeAlpha(mScanColor, 168),
-                changeAlpha(mScanColor, 255), changeAlpha(mScanColor, 255)
+                Color.TRANSPARENT, changeAlpha(mSweepColor, 0), changeAlpha(mSweepColor, 168),
+                changeAlpha(mSweepColor, 255), changeAlpha(mSweepColor, 255)
         };
-        mGradient = new SweepGradient(mRadius, mRadius,
+        mSweepShader = new SweepGradient(mRadius, mRadius,
                 colors, new float[]{0.0f, 0.6f, 0.99f, 0.998f, 1f});
 
-        mArcPaint.setShader(mGradient);
+        mArcPaint.setShader(mSweepShader);
 
         mSweepAnim = ValueAnimator.ofFloat(0,360);
-        mSweepAnim.setDuration(5000);;
+        mSweepAnim.setDuration(mSweepTime);
         mSweepAnim.setRepeatCount(-1);
         mSweepAnim.setInterpolator(new LinearInterpolator());
         mSweepAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mRotate = (float) animation.getAnimatedValue();
-                invalidate();
-
             }
         });
-
-        mRandomAnim = ValueAnimator.ofFloat(0,6);
-        mRandomAnim.setDuration(5000);
-        mRandomAnim.setRepeatCount(-1);
-        mRandomAnim.setInterpolator(new LinearInterpolator());
-        mRandomAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mRandomOffset = (float) animation.getAnimatedValue();
-                if (mRandomOffset == 6){
-                    mCircles.clear();
-                    generaateRandomCircle();
-                }
-            }
-        });
-        generaateRandomCircle();
-
-        if (!mRandomAnim.isRunning()){
-            mRandomAnim.start();
-        }
-        if (!mSweepAnim.isRunning()){
+        //自动启动动画
+        if (mIsAnimAuto && !mSweepAnim.isRunning()){
             mSweepAnim.start();
         }
 
 
     }
 
+    /**
+     * 随机生成小球
+     */
     private void generaateRandomCircle() {
         //生成随机小球
-
-        int radius = 10;
-        int count = 0;
-
-        while (count < 4) {
-            int x = (int) (Math.random() * (mWidth - 2*radius));
-            int y = (int) (Math.random() * (mHeight - 2*radius));
+        int radius = 2;
+        if (mCircles.size() < mRandomNum){
+            int x = (int) (Math.random() * (mWidth - 20 *radius));
+            int y = (int) (Math.random() * (mHeight - 20 *radius));
             if (isInCircle(x, y, radius)) {
-                count++;
-                RandonCircle circle = new RandonCircle();
-                circle.radius = radius;
-                circle.cx = x;
-                circle.cy = y;
-                mCircles.add(circle);
+                //时间差
+                boolean b = (int) (Math.random() * 15) == 0;
+                if (b) {
+                    RandomCircle circle = new RandomCircle();
+                    circle.radius = radius;
+                    circle.cx = x;
+                    circle.cy = y;
+                    mCircles.add(circle);
+                }
             }
         }
     }
@@ -188,41 +171,74 @@ public class ScanView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        //绘制波纹
+       // drawRipple(canvas);
+
         //绘制圆和圆点
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < mCircleNum; i++) {
             if (i != 0){
-                mPaint.setStrokeWidth(0.56f);
+                mPaint.setStrokeWidth(0.8f);
             }else{
                 mPaint.setStrokeWidth(1.5f);
+
             }
             canvas.drawCircle(mRadius ,mRadius ,mRadius - mOffset * i,mPaint);
         }
         //绘制虚线
-        drawDashLine(canvas);
+        if (mIsShowDash) {
+            drawDashLine(canvas);
+        }
 
         canvas.save();
         //旋转
-        canvas.rotate(mRotate,mRadius,mRadius);
+        canvas.rotate(mRotate, mRadius, mRadius);
         //画渐变扇形
-        canvas.drawCircle(mRadius,mRadius,mRadius,mArcPaint);
+        canvas.drawCircle(mRadius, mRadius, mRadius, mArcPaint);
         canvas.restore();
-
         //画圆点
-        for (RandonCircle circle : mCircles) {
-            float radius = circle.radius + mRandomOffset;
-            int alpha = (int) ((1 - mRandomOffset / 6) * 255);
-            //canvas.save();
-            mRandomPaint.setAlpha(alpha);
-            canvas.drawCircle(circle.cx,circle.cy,radius,mRandomPaint);
+        if (mIsShowRandom) {
+            drawRandomCircle(canvas);
         }
+        invalidate();
 
-        //画波纹
-        float radius = mRadius + mRandomOffset*10;
-        int alpha = (int) ((1 - mRandomOffset / 6) * 255);
-        mTestPaint.setAlpha(alpha);
-       // canvas.drawCircle(mRadius,mRadius,radius,mTestPaint);
+
+
     }
 
+
+    /**
+     * 随机生成小球
+     * @param canvas
+     */
+    private void drawRandomCircle(Canvas canvas) {
+        generaateRandomCircle();
+        for (RandomCircle circle : mCircles) {
+            circle.paint.setAlpha(circle.realAlpha);
+            canvas.drawCircle(circle.cx,circle.cy,circle.radius,circle.paint);
+            circle.radius += 0.1;
+            circle.alpha -=  1.48f;
+            circle.realAlpha = Math.round(circle.alpha);
+            if (circle.alpha <= 0){
+                circle.alpha = 0;
+            }
+        }
+        removeCircle();
+    }
+
+    /**
+     * 根据条件移除小球
+     */
+    private void removeCircle() {
+        Iterator<RandomCircle> iterator = mCircles.iterator();
+        while (iterator.hasNext()){
+            RandomCircle circle = iterator.next();
+            if (circle.radius >= 15 && circle.alpha <= 0){
+                iterator.remove();
+            }
+        }
+
+    }
 
 
     /**
@@ -239,15 +255,24 @@ public class ScanView extends View {
 
     }
 
-
+    /**
+     * 是否在小球范围内
+     * @param x
+     * @param y
+     * @param radius
+     * @return
+     */
     private boolean isInCircle(int x,int y,int radius){
-        return (mRadius-radius) > Math.sqrt((mRadius - x) * (mRadius - x) + (mRadius - y)*(mRadius - y));
+        return (mRadius- 15 * radius) > Math.sqrt((mRadius - x) * (mRadius - x) + (mRadius - y)*(mRadius - y));
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mWidth = AriesUtils.getDefaultSize(200,widthMeasureSpec);
         mHeight = AriesUtils.getDefaultSize(200,heightMeasureSpec);
+        int size = Math.min(mWidth,mHeight);
+        //保证正方形
+        mWidth = mHeight = size;
         setMeasuredDimension(mWidth, mHeight);
     }
 
@@ -255,29 +280,86 @@ public class ScanView extends View {
     /**
      * 一个生成圆点的类
      */
-    class RandonCircle{
+    class RandomCircle {
         public float alpha = 200;
-        public float radius;
+        public int realAlpha = 200;
+        public float radius = 2;
         public float cx,cy;
+        public Paint paint;
+
+        public RandomCircle() {
+            paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setAlpha(realAlpha);
+            paint.setColor(mRandomColor);
+        }
+
     }
 
+    public ScanView showDash(boolean showDash){
+        mIsShowDash = showDash;
+        return this;
+    }
+    public ScanView showRandomCircle(boolean showRandomCircle){
+        mIsShowRandom = showRandomCircle;
+        return this;
+    }
+    public ScanView autoAnim(boolean autoAnim){
+        mIsAnimAuto = autoAnim;
+        return this;
+    }
+
+    public ScanView circleColor(int circlecolor){
+        mCircleColor = circlecolor;
+        return this;
+    }
+    public ScanView dashColor(int dashColor){
+        mDashColor = dashColor;
+        return this;
+    }
+    public ScanView randomColor(int randomColor){
+        mRandomColor = randomColor;
+        return this;
+    }
+    public ScanView randomNum(int randomNum){
+        mRandomNum = randomNum;
+        return this;
+    }
+    public ScanView circleNum(int circleNum){
+        mCircleNum = circleNum;
+        return this;
+    }
+    public ScanView sweepTime(int sweepTime){
+        mSweepTime = sweepTime;
+        return this;
+    }
+
+    public ScanView sweepColor(int sweepColor){
+        mSweepColor = sweepColor;
+        return this;
+    }
+    public ScanView go(){
+        invalidate();
+        return this;
+    }
+
+
+
+    /**
+     * 开始动画
+     */
     public void start(){
-        Log.d(TAG, "zsr start: "+mRandomAnim);
-        if (mRandomAnim != null) {
-            mRandomAnim.start();
-        }
+
         if (mSweepAnim != null) {
             mSweepAnim.start();
         }
     }
 
-
-
+    /**
+     * 结束动画
+     */
     public void stop(){
-        if (mRandomAnim != null) {
-            mRandomAnim.cancel();
-            mRandomAnim = null;
-        }
+
         if (mSweepAnim != null) {
             mSweepAnim.cancel();;
             mSweepAnim = null;

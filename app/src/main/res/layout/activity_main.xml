@@ -3,32 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#685E5E"
     android:clipChildren="false"
+    android:background="#506E7A"
     android:orientation="vertical">
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="colorclick"
-        android:text="颜色选择" />
-
-    <com.zhengsr.ariesui.AppTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="测试"/>
-
-    <com.zhengsr.ariesuilib.select.colors.ColorsGradient
+        android:text="颜色测试"
+        android:onClick="colorclick"/>
+    <Button
         android:layout_width="match_parent"
-        app:gra_default_color="@color/colorAccent"
-        android:layout_height="100dp"/>
+        android:layout_height="wrap_content"
+        android:text="扫描动画"
+        android:onClick="scanview"/>
 
-   <com.zhengsr.ariesuilib.wieght.ScanView
-       android:id="@+id/scan"
-       android:layout_width="200dp"
-       android:layout_margin="40dp"
-       app:scan_color="#ff0000"
-       android:layout_height="200dp"/>
 
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.zhengsr.ariesuilib.select.colors.callback;
+package com.zhengsr.ariesuilib.wieght.colors;
 
 /**
  * @auther by zhengshaorui on 2019/10/22

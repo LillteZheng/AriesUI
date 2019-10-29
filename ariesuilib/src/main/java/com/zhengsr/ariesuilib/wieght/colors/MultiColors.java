@@ -1,4 +1,4 @@
-package com.zhengsr.ariesuilib.select.colors;
+package com.zhengsr.ariesuilib.wieght.colors;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zhengsr.ariesuilib.R;
-import com.zhengsr.ariesuilib.select.colors.callback.ColorSelectLiseter;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 
 /**

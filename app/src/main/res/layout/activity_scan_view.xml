@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#506E7A"
+    android:clipChildren="false"
+    tools:context=".activity.ScanViewActivity">
+
+    <com.zhengsr.ariesuilib.wieght.ScanView
+        android:id="@+id/scan"
+        android:layout_width="200dp"
+        android:layout_gravity="center"
+        app:scan_sweep_color="#14D3BB"
+        app:scan_sweep_time="3000"
+        app:scan_anim_auto="true"
+        app:scan_circle_color="#ffffff"
+        app:scan_circle_num="2"
+        app:scan_random_color="#14D3BB"
+        app:scan_random_num="3"
+        app:scan_show_dash="true"
+        app:scan_show_random="true"
+        android:layout_height="200dp"/>
+
+</FrameLayout>

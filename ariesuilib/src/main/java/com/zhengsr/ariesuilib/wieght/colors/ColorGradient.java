@@ -1,4 +1,4 @@
-package com.zhengsr.ariesuilib.select.colors;
+package com.zhengsr.ariesuilib.wieght.colors;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -19,13 +19,12 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zhengsr.ariesuilib.R;
-import com.zhengsr.ariesuilib.select.colors.callback.ColorSelectLiseter;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 /**
  * @auther by zhengshaorui on 2019/10/22
  * describe: 颜色渐变
  */
-public class ColorsGradient extends View {
+public class ColorGradient extends View {
     private static final String TAG = "ColorsGradient";
     /**
      * static
@@ -53,21 +52,21 @@ public class ColorsGradient extends View {
     private LinearGradient mDefaultGradient;
     private LinearGradient mChangeGradient;
 
-    public ColorsGradient(Context context) {
+    public ColorGradient(Context context) {
         this(context, null);
     }
 
-    public ColorsGradient(Context context, @Nullable AttributeSet attrs) {
+    public ColorGradient(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ColorsGradient(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ColorGradient(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ColorsGradient);
-        mDefaultColor = ta.getColor(R.styleable.ColorsGradient_gra_default_color, Color.YELLOW);
-        mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorsGradient_gra_circle_radius, 20);
-        int circleColor = ta.getColor(R.styleable.ColorsGradient_gra_circle_color,Color.WHITE);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.ColorGradient);
+        mDefaultColor = ta.getColor(R.styleable.ColorGradient_gra_default_color, Color.YELLOW);
+        mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorGradient_gra_circle_radius, 20);
+        int circleColor = ta.getColor(R.styleable.ColorGradient_gra_circle_color,Color.WHITE);
         ta.recycle();
 
         setClickable(true);
@@ -212,12 +211,12 @@ public class ColorsGradient extends View {
     }
 
 
-    public ColorsGradient addListener(ColorSelectLiseter listener) {
+    public ColorGradient addListener(ColorSelectLiseter listener) {
         mListener = listener;
         return this;
     }
 
-    public ColorsGradient color(int color) {
+    public ColorGradient color(int color) {
         mDefaultColor = color;
         mCurrentColor = mDefaultColor;
         if (mPaint != null){
@@ -229,11 +228,11 @@ public class ColorsGradient extends View {
         return this;
     }
 
-    public ColorsGradient radiuds(int radiuds) {
+    public ColorGradient radiuds(int radiuds) {
         mCircleRadius = radiuds;
         return this;
     }
-    public ColorsGradient circleColor(int circleColor){
+    public ColorGradient circleColor(int circleColor){
         mCirclePaint.setColor(circleColor);
         return this;
     }

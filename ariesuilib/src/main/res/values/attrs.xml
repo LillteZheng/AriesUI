@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ColorsGradient">
+    <declare-styleable name="ColorGradient">
         <attr name="gra_default_color" format="color|reference|integer"/>
         <attr name="gra_circle_radius" format="integer|dimension"/>
         <attr name="gra_circle_color" format="color|reference"/>
@@ -33,6 +33,15 @@
     </declare-styleable>
 
     <declare-styleable name="ScanView">
-        <attr name="scan_color" format="color|reference"/>
+        <attr name="scan_sweep_color" format="color|reference"/>
+        <attr name="scan_circle_num" format="integer"/>
+        <attr name="scan_circle_color" format="color|reference"/>
+        <attr name="scan_sweep_time" format="integer"/>
+        <attr name="scan_random_num" format="integer"/>
+        <attr name="scan_random_color" format="color|reference"/>
+        <attr name="scan_show_random" format="boolean"/>
+        <attr name="scan_show_dash" format="boolean"/>
+        <attr name="scan_anim_auto" format="boolean"/>
+        <attr name="scan_dash_color" format="color|reference"/>
     </declare-styleable>
 </resources>

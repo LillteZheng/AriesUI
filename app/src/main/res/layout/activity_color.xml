@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.ColorActivity"
+    android:clipChildren="false"
+    android:background="#506E7A"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        />
+    <!-- 自动根据长宽选择方向-->
+    <com.zhengsr.ariesuilib.wieght.colors.ColorGradient
+        android:id="@+id/colorgradient"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        app:gra_circle_radius="5dp"
+        app:gra_default_color="#ff0000"/>
+    <!-- 自动根据长宽选择方向-->
+    <com.zhengsr.ariesuilib.wieght.colors.MultiColors
+        android:id="@+id/multicolor"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        app:mul_tri_show_line="true"
+        app:mul_type="tri"
+        app:mul_tri_oritation="top"
+        app:mul_tri_size="5dp"
+        android:layout_marginStart="20dp"
+        app:mul_type_color="#FFFFFF"/>
+
+    <com.zhengsr.ariesuilib.wieght.colors.MultiColors
+        android:id="@+id/multicolor2"
+        android:layout_width="20dp"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        app:mul_type="rect"
+        app:mul_type_color="#FFFFFF"/>
+
+</LinearLayout>

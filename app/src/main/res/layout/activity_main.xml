@@ -18,6 +18,12 @@
         android:text="扫描动画"
         android:onClick="scanview"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QQ小红点"
+        android:onClick="beizerPoint"/>
+
 
 
 </LinearLayout>

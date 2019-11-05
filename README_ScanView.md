@@ -49,14 +49,6 @@ protected void onDestroy() {
 
 ## 自定义属性说明
 
- <declare-styleable name="ScanView">
-        
-    
-        <attr name="scan_show_random" format="boolean"/>
-        <attr name="scan_show_dash" format="boolean"/>
-        <attr name="scan_anim_auto" format="boolean"/>
-        <attr name="scan_dash_color" format="color|reference"/>
-    </declare-styleable>
 
 **ScanView**
 

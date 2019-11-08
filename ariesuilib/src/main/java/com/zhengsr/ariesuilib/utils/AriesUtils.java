@@ -1,8 +1,11 @@
 package com.zhengsr.ariesuilib.utils;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 
 /**
@@ -42,6 +45,34 @@ public class AriesUtils {
         float x = (rect.width() - width)/2+rect.left;
         float y = rect.top+rect.height()/2 - (metrics.descent+metrics.ascent)/2;
         canvas.drawText(msg,x,y,paint);
+    }
+
+
+    /**
+     * dip 转换成 px
+     *
+     * @param dip
+     * @param context
+     * @return
+     */
+    public static int dip2px(float dip, Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, displayMetrics);
+    }
+
+    /**
+     * 获取状态栏高度
+     *
+     * @return
+     */
+    public static int getStatusBarHeight(Context context) {
+        //获取status_bar_height资源的ID
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            return context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return dip2px(25, context);
     }
 
 

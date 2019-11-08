@@ -44,4 +44,13 @@
         <attr name="scan_anim_auto" format="boolean"/>
         <attr name="scan_dash_color" format="color|reference"/>
     </declare-styleable>
+
+    <declare-styleable name="BezierPointView">
+        <attr name="bez_default_circleSize" format="integer|dimension"/>
+        <attr name="bez_draw_circlecSize" format="integer|dimension"/>
+        <attr name="bez_max_length" format="integer|dimension"/>
+        <attr name="bez_draw_color" format="color|reference"/>
+        <attr name="bez_recovery_bound" format="dimension|integer"/>
+        <attr name="bez_isCanMove" format="boolean"/>
+    </declare-styleable>
 </resources>

@@ -1,5 +1,6 @@
 package com.zhengsr.ariesui.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
@@ -10,6 +11,8 @@ import com.zhengsr.ariesui.adapter.LGViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ezy.assist.compat.SettingsCompat;
 
 public class BeizerActivity extends AppCompatActivity {
 
@@ -27,6 +30,11 @@ public class BeizerActivity extends AppCompatActivity {
 
         TextAdapter adapter = new TextAdapter(datas,R.layout.item_text);
         listView.setAdapter(adapter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!SettingsCompat.canDrawOverlays(this)){
+                SettingsCompat.manageDrawOverlays(this);
+            }
+        }
     }
 
 
@@ -45,4 +53,5 @@ public class BeizerActivity extends AppCompatActivity {
             viewHolder.setText(R.id.item_text,data.text);
         }
     }
+
 }

@@ -26,9 +26,12 @@
             android:text="测试"
             android:textSize="16sp" />
 
-        <com.zhengsr.ariesuilib.wieght.BeizerPointView
+        <com.zhengsr.ariesui.TestView
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:background="@drawable/scan_circle"
+            android:text="1"
+            android:gravity="center"
             android:layout_marginEnd="10dp" />
     </LinearLayout>
     <LinearLayout
@@ -46,11 +49,14 @@
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:text="测试"
+
             android:textSize="16sp" />
 
-        <com.zhengsr.ariesui.TestView
+        <com.zhengsr.ariesuilib.wieght.point.BezierPointView
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:background="@drawable/scan_circle"
+
             android:layout_marginEnd="10dp" />
     </LinearLayout>
 

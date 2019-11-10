@@ -30,7 +30,7 @@ implementation 'com.github.LillteZheng:AriesUI:v1.02'
     <th>扫描动画</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="240" width="340"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="280" width="340"></a></td>
   </tr>
 
 </table>
@@ -42,8 +42,8 @@ implementation 'com.github.LillteZheng:AriesUI:v1.02'
     <th>QQ小红点</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="240" width="360"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="400" width="340"></a></td>
   </tr>
 
 </table>
-[雷达扫描说明文档](https://github.com/LillteZheng/AriesUI/blob/master/README_BezierView.md)
+[QQ小红点](https://github.com/LillteZheng/AriesUI/blob/master/README_BezierView.md)

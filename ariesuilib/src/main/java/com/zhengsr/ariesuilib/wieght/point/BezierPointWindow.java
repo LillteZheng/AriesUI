@@ -2,39 +2,66 @@ package com.zhengsr.ariesuilib.wieght.point;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.PointFEvaluator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
+import com.zhengsr.ariesuilib.R;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 
 /**
  * @author by  zhengshaorui on 2019/10/8
  * Describe: 模仿QQ的红点拖拽view，这个我们不喜欢别人继承
  */
- class BezierPointWindow extends AbsPointView {
+class BezierPointWindow extends View {
     private static final String TAG = "BeizerPointView";
     private Paint mPaint;
     private PointF mStartPoint;
     private PointF mMovePoint;
     private Path mPath;
-    private float mRadius;
     private boolean mIsBreakUp;
-    private boolean mIsHide;
     private int mBarHeight = 0;
     private float mBitmapWidth, mBitmapHeight;
     private Bitmap mOriginalBitmap;
+    private float mDefaultRadius;
+    private boolean mIsCanMove;
+    private float mMaxMoveLength;
+    private float mRecoveryBound;
+    private float mDrawRadius;
+    private ValueAnimator mBackAnim;
+    private PointListener mPointListener;
+    private Rect mBitmapRect;
+    private RectF mDstBitRect;
+    private int mBitmapIndex;
+    private boolean mDrawBitmap;
+    private boolean mIsCanStart;
+
+    private Bitmap[] mBitmaps = {
+            BitmapFactory.decodeResource(getResources(), R.mipmap.blow1),
+            BitmapFactory.decodeResource(getResources(), R.mipmap.blow2),
+            BitmapFactory.decodeResource(getResources(), R.mipmap.blow3),
+            BitmapFactory.decodeResource(getResources(), R.mipmap.blow4),
+            BitmapFactory.decodeResource(getResources(), R.mipmap.blow5),
+            null,
+    };
+    private boolean mUseDefaultAnim;
+    private ValueAnimator mBitmapAnim;
 
     public BezierPointWindow(Context context) {
         this(context, null);
@@ -49,9 +76,29 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(mDrawColor);
         mPath = new Path();
 
+    }
+
+    /**
+     * 拿到自定义属性
+     *
+     * @param view
+     * @return
+     */
+    public BezierPointWindow addOriginalView(BezierPointView view) {
+        mPaint.setColor(view.getDrawColor());
+
+        mDefaultRadius = view.getDefaultCircleSize() / 2;
+        mIsCanMove = view.isCanMove();
+        mMaxMoveLength = view.getMaxMoveLength();
+        mRecoveryBound = view.getRecoveryBound();
+        mDrawRadius = view.getDrawCircleSize() / 2;
+        mUseDefaultAnim = view.isUseDefaultAnim();
+        Bitmap bitmap = mBitmaps[0];
+        mBitmapRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        mDstBitRect = new RectF();
+        return this;
     }
 
 
@@ -60,57 +107,70 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
 
         super.onDraw(canvas);
 
-        if (!mIsHide) {
-            calculateBeizer();
-            canvas.drawPath(mPath, mPaint);
-            if (!mIsBreakUp) {
-                canvas.drawCircle(mStartPoint.x, mStartPoint.y, mRadius, mPaint);
+        if (mDrawBitmap) {
+            if (mBitmapIndex <= mBitmaps.length - 2) {
+                canvas.drawBitmap(mBitmaps[mBitmapIndex], mBitmapRect, mDstBitRect, null);
             }
+        } else {
+            if (!mIsBreakUp) {
+                calculateBeizer();
+                canvas.drawPath(mPath, mPaint);
+                canvas.drawCircle(mStartPoint.x, mStartPoint.y, mDrawRadius, mPaint);
+            }
+            canvas.drawBitmap(mOriginalBitmap, mMovePoint.x - mBitmapWidth,
+                    mMovePoint.y - mBitmapHeight, null);
         }
 
 
-        canvas.drawBitmap(mOriginalBitmap, mMovePoint.x - mBitmapWidth,
-                mMovePoint.y - mBitmapHeight, null);
-
     }
 
-
+    /**
+     * 初始化
+     *
+     * @param x
+     * @param y
+     */
     public void initPoint(float x, float y) {
-        mRadius = mWidth / 2;
+        mIsCanStart = true;
         mStartPoint = new PointF(x, y - mBarHeight);
         mMovePoint = new PointF(mStartPoint.x, mStartPoint.y);
         postInvalidate();
-        Log.d(TAG, "zsr - initPoint: "+mWidth+" "+mHeight+" "+mDrawColor+" "+mRecoveryBound);
     }
 
 
     public boolean onTouchEvent(MotionEvent event) {
-
-
+        if (!mIsCanStart) {
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mIsHide = false;
                 mIsBreakUp = false;
-                mRadius = mWidth / 2;
-                break;
+                mDrawBitmap = false;
+                mDrawRadius = mDefaultRadius;
 
+                break;
             case MotionEvent.ACTION_MOVE:
                 mMovePoint.set(event.getRawX(), event.getRawY() - mBarHeight);
-
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                if (!mIsBreakUp) {
-                    mIsHide = true;
+                mIsCanStart = false;
+
+                if (getDistance(mMovePoint, mStartPoint) <= (mRecoveryBound + mDrawRadius)) {
                     backAnim();
                 } else {
-                    if (mPointListener != null) {
-                        mPointListener.desStroy(
-                                event.getRawX() - mWidth / 2,
-                                event.getRawY() - mHeight / 2 - mBarHeight);
+                    mIsBreakUp = true;
+                    if (mUseDefaultAnim) {
+                        mDrawBitmap = true;
+                        bitmapAnim();
+                    } else {
+                        if (mPointListener != null) {
+                          //  setX(event.getRawX());
+                          //  setY(event.getRawY() - mBarHeight);
+                            mPointListener.destroy();
+                        }
                     }
                 }
-
                 break;
             default:
                 break;
@@ -119,22 +179,54 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
         return true;
     }
 
+    private void bitmapAnim() {
 
+        float offset = 3 * mDefaultRadius / 2;
+        mDstBitRect.set(mMovePoint.x - offset, mMovePoint.y - offset,
+                mMovePoint.x + offset, mMovePoint.y + offset);
+
+        mBitmapAnim = ValueAnimator.ofInt(0, mBitmaps.length - 1);
+        mBitmapAnim.setDuration(1000);
+        mBitmapAnim.setInterpolator(new OvershootInterpolator());
+        mBitmapAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mBitmapIndex = (int) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        mBitmapAnim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (mPointListener != null) {
+                    mPointListener.destroy();
+
+                }
+            }
+        });
+        mBitmapAnim.start();
+
+    }
+
+    /**
+     * 回弹动画
+     */
     private void backAnim() {
         //要有个反弹的效果
         // mIsBreakUp = true;
-        ValueAnimator animator = ValueAnimator.ofObject(new PointFEvaluator(), mMovePoint, mStartPoint);
-        animator.setDuration(100);
+        mBackAnim = ValueAnimator.ofObject(new PointFEvaluator(), mMovePoint, mStartPoint);
+        mBackAnim.setDuration(100);
         //用回弹的插值器
-        animator.setInterpolator(new OvershootInterpolator());
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mBackAnim.setInterpolator(new OvershootInterpolator());
+        mBackAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mMovePoint = (PointF) animation.getAnimatedValue();
                 invalidate();
             }
         });
-        animator.addListener(new AnimatorListenerAdapter() {
+        mBackAnim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
@@ -143,9 +235,7 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
                 }
             }
         });
-
-
-        animator.start();
+        mBackAnim.start();
 
     }
 
@@ -166,11 +256,11 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
         float dy = y - y0;
         double a = Math.atan(dy / dx);
         //拿到圆切点的长度偏移量
-        float offsetx0 = (float) (mRadius * Math.sin(a));
-        float offsety0 = (float) (mRadius * Math.cos(a));
+        float offsetx0 = (float) (mDrawRadius * Math.sin(a));
+        float offsety0 = (float) (mDrawRadius * Math.cos(a));
 
-        float offsetx = (float) (mWidth / 2 * Math.sin(a));
-        float offsety = (float) (mWidth / 2 * Math.cos(a));
+        float offsetx = (float) (mDefaultRadius * Math.sin(a));
+        float offsety = (float) (mDefaultRadius * Math.cos(a));
 
         //算出第一个圆的切点坐标
         float p0x = x0 + offsetx0;
@@ -198,25 +288,23 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
 
         //超过一定距离时，且圆形的半径也要跟着变小
         double distance = getDistance(mMovePoint, mStartPoint);
-        mRadius = (int) (mDefaultCircleSize - distance / 8);
+        mDrawRadius = (int) (mDefaultRadius - distance / 8);
         if (distance > mMaxMoveLength) {
             // 超过一定距离 贝塞尔和固定圆都不要画了
             mPath.reset();
             mIsBreakUp = true;
             return;
-        } else {
-            mIsBreakUp = false;
         }
-        if (mRadius <= 7) {
-            mRadius = 7;
+        if (mDrawRadius <= 7) {
+            mDrawRadius = 7;
         }
 
     }
 
     public void setWindowType(int type) {
         if (type == WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY) {
-            mBarHeight = AriesUtils.getStatusBarHeight(getContext());
         }
+        mBarHeight = AriesUtils.getStatusBarHeight(getContext());
     }
 
     public boolean isCanMove() {
@@ -227,21 +315,34 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
     public interface PointListener {
 
         /**
-         * 需要消失
+         * 需要回弹
          */
         void drawUp();
 
-        void desStroy(float x, float y);
+        /**
+         * 需要消失
+         */
+        void destroy();
     }
 
-    private PointListener mPointListener;
+
+    public void removeAnim() {
+        if (mBitmapAnim != null) {
+            mBitmapAnim.removeAllUpdateListeners();
+            mBitmapAnim.end();
+            mBitmapAnim.cancel();
+        }
+        if (mBackAnim != null) {
+            mBackAnim.removeAllUpdateListeners();
+            mBackAnim.end();
+            mBackAnim.cancel();
+        }
+    }
+
 
     public void setPointListener(PointListener listener) {
         mPointListener = listener;
     }
-
-
-
 
 
     public void setBitmap(Bitmap bitmap) {
@@ -249,6 +350,10 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
         mBitmapWidth = bitmap.getWidth() / 2;
         mBitmapHeight = bitmap.getHeight() / 2;
         postInvalidate();
+    }
+
+    public Bitmap getBitmap() {
+        return mOriginalBitmap;
     }
 
 
@@ -263,7 +368,6 @@ import com.zhengsr.ariesuilib.utils.AriesUtils;
         return Math.sqrt((point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y));
 
     }
-
 
     class PointFEvaluator implements TypeEvaluator<PointF> {
         private static final String TAG = "PointFEvaluator";

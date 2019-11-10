@@ -35,3 +35,15 @@ implementation 'com.github.LillteZheng:AriesUI:v1.02'
 
 </table>
 [雷达扫描说明文档](https://github.com/LillteZheng/AriesUI/blob/master/README_ScanView.md)
+
+## QQ小红点
+<table  align="center">
+ <tr>
+    <th>QQ小红点</th>
+  </tr>
+   <tr>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="240" width="360"></a></td>
+  </tr>
+
+</table>
+[雷达扫描说明文档](https://github.com/LillteZheng/AriesUI/blob/master/README_BezierView.md)

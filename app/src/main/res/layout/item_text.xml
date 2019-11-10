@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="50dp"
     android:gravity="center_vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clipChildren="false"
     android:orientation="horizontal">
 
@@ -14,8 +15,20 @@
         android:layout_height="wrap_content"/>
 
     <com.zhengsr.ariesuilib.wieght.point.BezierPointView
-        android:layout_width="15dp"
-        android:layout_marginEnd="10dp"
-        android:layout_height="15dp"/>
+        android:id="@+id/item_point"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/scan_circle"
+        app:bez_default_circleSize="15dp"
+        app:bez_draw_circlecSize="20dp"
+        app:bez_draw_color="#ff0000"
+        app:bez_max_length="50dp"
+        app:bez_isCanMove="true"
+        app:bez_recovery_bound="10dp"
+        android:gravity="center"
+        android:text="99+"
+        android:textSize="10dp"
+        android:textColor="#ffffff"
+        android:layout_marginEnd="10dp" />
 
 </LinearLayout>

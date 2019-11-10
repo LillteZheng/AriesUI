@@ -9,6 +9,11 @@
     android:orientation="vertical"
 
     tools:context=".activity.BeizerActivity">
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="恢复" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,12 +31,22 @@
             android:text="测试"
             android:textSize="16sp" />
 
-        <com.zhengsr.ariesui.TestView
+        <com.zhengsr.ariesuilib.wieght.point.BezierPointView
+            android:id="@+id/pointview"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/scan_circle"
-            android:text="1"
+            app:bez_default_circleSize="15dp"
+            app:bez_draw_circlecSize="20dp"
+            app:bez_draw_color="#ff0000"
+            app:bez_max_length="50dp"
+            app:bez_isCanMove="true"
+            app:bez_recovery_bound="10dp"
             android:gravity="center"
+            android:text="99+"
+            android:textSize="10dp"
+            android:textColor="#ffffff"
+            app:bez_animation="@anim/scale_alpha"
             android:layout_marginEnd="10dp" />
     </LinearLayout>
     <LinearLayout
@@ -53,19 +68,35 @@
             android:textSize="16sp" />
 
         <com.zhengsr.ariesuilib.wieght.point.BezierPointView
+            android:id="@+id/pointview2"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/scan_circle"
-
+            app:bez_default_circleSize="15dp"
+            app:bez_draw_circlecSize="20dp"
+            app:bez_draw_color="#ff0000"
+            app:bez_max_length="50dp"
+            app:bez_isCanMove="true"
+            app:bez_recovery_bound="10dp"
+            android:gravity="center"
+            android:text="99+"
+            android:textSize="10dp"
+            android:textColor="#ffffff"
+            app:bez_animator="@animator/alpha_out"
             android:layout_marginEnd="10dp" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"/>
 
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipChildren="false"
-        android:visibility="gone"
+        android:visibility="visible"
         />
 </LinearLayout>

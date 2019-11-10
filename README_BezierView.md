@@ -4,12 +4,14 @@
     <th>QQ小红点</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="240" width="360"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="410" width="360"></a></td>
   </tr>
 
 </table>
 调用非常简单：
+
 ```
+
 <com.zhengsr.ariesuilib.wieght.point.BezierPointView
     android:id="@+id/pointview2"
     android:layout_width="20dp"
@@ -27,6 +29,7 @@
     android:textColor="#ffffff"
     app:bez_animator="@animator/alpha_out"
     android:layout_marginEnd="10dp" />
+    
 ```
 
 BezierPointView 是一个 TextView ，所以只需要配置好背景，其他的和TextView 没啥区别。

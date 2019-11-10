@@ -10,7 +10,7 @@ allprojects {
 }
 ```
 ```
-implementation 'com.github.LillteZheng:AriesUI:v1.02'
+implementation 'com.github.LillteZheng:AriesUI:v1.03'
 ```
 ## 颜色选择
 <table  align="center">

@@ -39,14 +39,13 @@
             app:bez_default_circleSize="15dp"
             app:bez_draw_circlecSize="20dp"
             app:bez_draw_color="#ff0000"
-            app:bez_max_length="50dp"
+            app:bez_max_length="60dp"
             app:bez_isCanMove="true"
-            app:bez_recovery_bound="10dp"
+            app:bez_recovery_bound="20dp"
             android:gravity="center"
             android:text="99+"
             android:textSize="10dp"
             android:textColor="#ffffff"
-            app:bez_animation="@anim/scale_alpha"
             android:layout_marginEnd="10dp" />
     </LinearLayout>
     <LinearLayout
@@ -75,9 +74,9 @@
             app:bez_default_circleSize="15dp"
             app:bez_draw_circlecSize="20dp"
             app:bez_draw_color="#ff0000"
-            app:bez_max_length="50dp"
+            app:bez_max_length="60dp"
             app:bez_isCanMove="true"
-            app:bez_recovery_bound="10dp"
+            app:bez_recovery_bound="20dp"
             android:gravity="center"
             android:text="99+"
             android:textSize="10dp"
@@ -86,11 +85,6 @@
             android:layout_marginEnd="10dp" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"/>
 
     <ListView
         android:id="@+id/listview"

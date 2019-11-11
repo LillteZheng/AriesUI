@@ -53,6 +53,5 @@
         <attr name="bez_recovery_bound" format="dimension|integer"/>
         <attr name="bez_isCanMove" format="boolean"/>
         <attr name="bez_animator" format="reference"/>
-        <attr name="bez_animation" format="reference"/>
     </declare-styleable>
 </resources>

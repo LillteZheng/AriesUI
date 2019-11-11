@@ -3,7 +3,7 @@
     <th>颜色选择</th>
   </tr>
    <tr>
-    <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/colors.gif" align="left" height="480" width="340"></a></td>
+    <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/colors.gif" align="left" height="592" width="401"></a></td>
   </tr>
 
 </table>

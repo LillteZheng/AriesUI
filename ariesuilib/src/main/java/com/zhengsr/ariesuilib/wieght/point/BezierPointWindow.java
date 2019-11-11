@@ -2,27 +2,20 @@ package com.zhengsr.ariesuilib.wieght.point;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.PointFEvaluator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
-import com.zhengsr.ariesuilib.R;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
 
 /**
@@ -46,22 +39,12 @@ class BezierPointWindow extends View {
     private float mDrawRadius;
     private ValueAnimator mBackAnim;
     private PointListener mPointListener;
-    private Rect mBitmapRect;
-    private RectF mDstBitRect;
-    private int mBitmapIndex;
+
     private boolean mDrawBitmap;
     private boolean mIsCanStart;
+    private boolean mNotifyOutToRemove;
 
-    private Bitmap[] mBitmaps = {
-            BitmapFactory.decodeResource(getResources(), R.mipmap.blow1),
-            BitmapFactory.decodeResource(getResources(), R.mipmap.blow2),
-            BitmapFactory.decodeResource(getResources(), R.mipmap.blow3),
-            BitmapFactory.decodeResource(getResources(), R.mipmap.blow4),
-            BitmapFactory.decodeResource(getResources(), R.mipmap.blow5),
-            null,
-    };
-    private boolean mUseDefaultAnim;
-    private ValueAnimator mBitmapAnim;
+
 
     public BezierPointWindow(Context context) {
         this(context, null);
@@ -94,10 +77,6 @@ class BezierPointWindow extends View {
         mMaxMoveLength = view.getMaxMoveLength();
         mRecoveryBound = view.getRecoveryBound();
         mDrawRadius = view.getDrawCircleSize() / 2;
-        mUseDefaultAnim = view.isUseDefaultAnim();
-        Bitmap bitmap = mBitmaps[0];
-        mBitmapRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        mDstBitRect = new RectF();
         return this;
     }
 
@@ -108,9 +87,7 @@ class BezierPointWindow extends View {
         super.onDraw(canvas);
 
         if (mDrawBitmap) {
-            if (mBitmapIndex <= mBitmaps.length - 2) {
-                canvas.drawBitmap(mBitmaps[mBitmapIndex], mBitmapRect, mDstBitRect, null);
-            }
+           //todo
         } else {
             if (!mIsBreakUp) {
                 calculateBeizer();
@@ -121,7 +98,10 @@ class BezierPointWindow extends View {
                     mMovePoint.y - mBitmapHeight, null);
         }
 
-
+        if (!mNotifyOutToRemove && mOriginalBitmap != null){
+            mNotifyOutToRemove = true;
+            mPointListener.onStart();
+        }
     }
 
     /**
@@ -159,16 +139,10 @@ class BezierPointWindow extends View {
                 if (getDistance(mMovePoint, mStartPoint) <= (mRecoveryBound + mDrawRadius)) {
                     backAnim();
                 } else {
-                    mIsBreakUp = true;
-                    if (mUseDefaultAnim) {
-                        mDrawBitmap = true;
-                        bitmapAnim();
-                    } else {
-                        if (mPointListener != null) {
-                          //  setX(event.getRawX());
-                          //  setY(event.getRawY() - mBarHeight);
-                            mPointListener.destroy();
-                        }
+                   mIsBreakUp = true;
+                   mDrawBitmap = true;
+                    if (mPointListener != null) {
+                        mPointListener.destroy(mMovePoint);
                     }
                 }
                 break;
@@ -179,35 +153,6 @@ class BezierPointWindow extends View {
         return true;
     }
 
-    private void bitmapAnim() {
-
-        float offset = 3 * mDefaultRadius / 2;
-        mDstBitRect.set(mMovePoint.x - offset, mMovePoint.y - offset,
-                mMovePoint.x + offset, mMovePoint.y + offset);
-
-        mBitmapAnim = ValueAnimator.ofInt(0, mBitmaps.length - 1);
-        mBitmapAnim.setDuration(1000);
-        mBitmapAnim.setInterpolator(new OvershootInterpolator());
-        mBitmapAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mBitmapIndex = (int) animation.getAnimatedValue();
-                invalidate();
-            }
-        });
-        mBitmapAnim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                if (mPointListener != null) {
-                    mPointListener.destroy();
-
-                }
-            }
-        });
-        mBitmapAnim.start();
-
-    }
 
     /**
      * 回弹动画
@@ -280,6 +225,7 @@ class BezierPointWindow extends View {
         //清掉上次，避免残留
         mPath.reset();
 
+        //形成贝塞尔曲线
         mPath.moveTo(p0x, p0y);
         mPath.quadTo(anchorx, anchory, p2x, p2y);
         mPath.lineTo(p3x, p3y);
@@ -288,22 +234,22 @@ class BezierPointWindow extends View {
 
         //超过一定距离时，且圆形的半径也要跟着变小
         double distance = getDistance(mMovePoint, mStartPoint);
-        mDrawRadius = (int) (mDefaultRadius - distance / 8);
-        if (distance > mMaxMoveLength) {
-            // 超过一定距离 贝塞尔和固定圆都不要画了
-            mPath.reset();
-            mIsBreakUp = true;
-            return;
-        }
+        mDrawRadius = (int) (mDefaultRadius - distance / 14);
         if (mDrawRadius <= 7) {
             mDrawRadius = 7;
         }
+        if (distance >= mMaxMoveLength) {
+            // 超过一定距离 贝塞尔和固定圆都不要画了
+            mIsBreakUp = true;
+            mDrawRadius = 0;
+            mPath.reset();
+            return;
+        }
+
 
     }
 
     public void setWindowType(int type) {
-        if (type == WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY) {
-        }
         mBarHeight = AriesUtils.getStatusBarHeight(getContext());
     }
 
@@ -322,16 +268,17 @@ class BezierPointWindow extends View {
         /**
          * 需要消失
          */
-        void destroy();
+        void destroy(PointF pointF);
+
+        /**
+         * 此时可以移除外面的view
+         */
+        void onStart();
     }
 
 
     public void removeAnim() {
-        if (mBitmapAnim != null) {
-            mBitmapAnim.removeAllUpdateListeners();
-            mBitmapAnim.end();
-            mBitmapAnim.cancel();
-        }
+
         if (mBackAnim != null) {
             mBackAnim.removeAllUpdateListeners();
             mBackAnim.end();
@@ -346,6 +293,7 @@ class BezierPointWindow extends View {
 
 
     public void setBitmap(Bitmap bitmap) {
+        mNotifyOutToRemove = false;
         mOriginalBitmap = bitmap;
         mBitmapWidth = bitmap.getWidth() / 2;
         mBitmapHeight = bitmap.getHeight() / 2;

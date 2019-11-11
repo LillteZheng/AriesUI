@@ -3,7 +3,7 @@
     <th>扫描动画</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="200" width="340"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="235" width="294"></a></td>
   </tr>
 
 </table>

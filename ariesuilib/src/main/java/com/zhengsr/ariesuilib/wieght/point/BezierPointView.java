@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.Animation;
 
 import com.zhengsr.ariesuilib.R;
 import com.zhengsr.ariesuilib.utils.AriesUtils;
@@ -29,7 +28,7 @@ public class BezierPointView extends AppCompatTextView {
     private boolean mUseDefaultAnim = true;
     private PointHelper mPointHelper;
     private int mAnimatorRes;
-    private int mAnimationRes;
+    private boolean mUseSelfAnim;
 
     public BezierPointView(Context context) {
         this(context, null);
@@ -49,9 +48,8 @@ public class BezierPointView extends AppCompatTextView {
         mIsCanMove = ta.getBoolean(R.styleable.BezierPointView_bez_isCanMove,true);
         mRecoveryBound = ta.getDimensionPixelSize(R.styleable.BezierPointView_bez_recovery_bound,10);
         mAnimatorRes = ta.getResourceId(R.styleable.BezierPointView_bez_animator, -1);
-        mAnimationRes = ta.getResourceId(R.styleable.BezierPointView_bez_animation,-1);
         ta.recycle();
-        if (mAnimationRes != -1 || mAnimatorRes != -1){
+        if (mAnimatorRes != -1){
             mUseDefaultAnim = false;
         }
     }
@@ -98,6 +96,11 @@ public class BezierPointView extends AppCompatTextView {
     public boolean isUseDefaultAnim(){
         return mUseDefaultAnim;
     }
+
+    public boolean isUseSelfAnim(){
+        return mUseSelfAnim;
+    }
+
     public PointViewListener getListener(){
         return mListener;
     }
@@ -105,9 +108,7 @@ public class BezierPointView extends AppCompatTextView {
     public int getAnimatorRes(){
         return mAnimatorRes;
     }
-    public int getAnimationRes(){
-        return mAnimationRes;
-    }
+
 
     public BezierPointView defaultRadius(float  defaultRadius){
         mDefaultCircleSize = defaultRadius;
@@ -133,8 +134,8 @@ public class BezierPointView extends AppCompatTextView {
         mIsCanMove = isCanMove;
         return this;
     }
-    public BezierPointView listener(boolean useDefaultAnim,PointViewListener listener){
-        mUseDefaultAnim = useDefaultAnim;
+    public BezierPointView listener(boolean useSelfAnim,PointViewListener listener){
+        mUseSelfAnim = useSelfAnim;
         mListener = listener;
         return this;
     }
@@ -151,7 +152,7 @@ public class BezierPointView extends AppCompatTextView {
     }
 
     public void removeAnim(){
-        mPointHelper.removeAnim();
+        mPointHelper.clearAnim();
     }
 
 }

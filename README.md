@@ -10,7 +10,7 @@ allprojects {
 }
 ```
 ```
-implementation 'com.github.LillteZheng:AriesUI:v1.03'
+implementation 'com.github.LillteZheng:AriesUI:v1.04'
 ```
 ## 颜色选择
 <table  align="center">
@@ -18,7 +18,7 @@ implementation 'com.github.LillteZheng:AriesUI:v1.03'
     <th>颜色选择</th>
   </tr>
    <tr>
-    <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/colors.gif" align="left" height="480" width="340"></a></td>
+    <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/colors.gif" align="left" height="592" width="401"></a></td>
   </tr>
 
 </table>
@@ -30,7 +30,7 @@ implementation 'com.github.LillteZheng:AriesUI:v1.03'
     <th>扫描动画</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="280" width="340"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/scanview.gif" align="left" height="235" width="294"></a></td>
   </tr>
 
 </table>
@@ -42,7 +42,7 @@ implementation 'com.github.LillteZheng:AriesUI:v1.03'
     <th>QQ小红点</th>
   </tr>
    <tr>
-     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="400" width="340"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/qqpoint.gif" align="left" height="454" width="414"></a></td>
   </tr>
 
 </table>

@@ -6,23 +6,18 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.graphics.PointF;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
-import android.support.v7.view.menu.MenuItemWrapperICS;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zhengsr.ariesuilib.R;
-import com.zhengsr.ariesuilib.utils.AriesUtils;
 
 /**
  * @author by  zhengshaorui on 2019/10/8
@@ -40,6 +35,7 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
     private FrameLayout mContainer;
     private Animator mAnimator;
     private ImageView mImageView;
+    private AnimationDrawable mAnimationDrawable;
 
     public PointHelper(BezierPointView view) {
         mStaticView = view;
@@ -57,11 +53,12 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
             mParams.gravity = Gravity.LEFT | Gravity.TOP;
             mParams.format = PixelFormat.TRANSLUCENT;
             int type;
-            if (Build.VERSION.SDK_INT >= 26) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
             } else {
                 type = WindowManager.LayoutParams.TYPE_TOAST;
             }
+
             mParams.type = type;
             mParams.width = WindowManager.LayoutParams.MATCH_PARENT;
             mParams.height = WindowManager.LayoutParams.MATCH_PARENT;
@@ -69,6 +66,10 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
             //添加小红点
             mWindowView = new BezierPointWindow(mContext);
             mWindowView.addOriginalView(mStaticView).setWindowType(type);
+
+            //添加imageview
+
+            mImageView = new ImageView(mContext);
 
         }
     }
@@ -108,17 +109,16 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
             mContainer.setClipToPadding(false);
             mWindowView.setLayoutParams(mLayoutParams);
         }
-        mContainer.removeView(mWindowView);
+        mContainer.removeAllViews();
         mContainer.addView(mWindowView, mParams);
+        mWindowManager.addView(mContainer, mParams);
         //初始化坐标
         mStaticView.getLocationInWindow(mPos);
         int width = mStaticView.getWidth();
         int height = mStaticView.getHeight();
 
-        mLayoutParams.setMargins(mPos[0], mPos[1], 0, 0);
-
         //设置大小和起始位置
-        mWindowView.initPoint(mPos[0] +width/2, mPos[1]+height/2);
+        mWindowView.initPoint(mPos[0] + width / 2, mPos[1] + height / 2);
         mWindowView.setPointListener(this);
         mWindowView.setVisibility(View.VISIBLE);
         //拿到bitmap
@@ -126,68 +126,74 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
         Bitmap bitmap = Bitmap.createBitmap(mStaticView.getDrawingCache());
         mStaticView.setDrawingCacheEnabled(false);
         mWindowView.setBitmap(bitmap);
+    }
 
-        mWindowManager.addView(mContainer, mParams);
+    @Override
+    public void onStart() {
         //这个时候，一开始的view，开始消失了
         mStaticView.setVisibility(View.GONE);
     }
 
     @Override
     public void drawUp() {
-        removeView();
         mStaticView.setVisibility(View.VISIBLE);
+        mStaticView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                removeView();
+            }
+        }, 100);
     }
 
     @Override
-    public void destroy() {
-        if (mStaticView.getAnimatorRes() != -1){
-            mAnimator = AnimatorInflater.loadAnimator(mContext, mStaticView.getAnimatorRes());
-            mAnimator.setTarget(mWindowView);
-            mAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    removeView();
-                }
-            });
-            mAnimator.start();
-        }else if (mStaticView.getAnimationRes() != -1){
+    public void destroy(PointF pointF) {
+        //移除所有
+        mContainer.removeAllViews();
+        //添加imageview，用于动画
+        mContainer.addView(mImageView, mLayoutParams);
+        //指定初始位置
+        mImageView.setX(pointF.x - mStaticView.getWidth() * 1.0f / 2);
+        mImageView.setY(pointF.y - mStaticView.getHeight() * 1.0f / 2);
 
-            Animation animation = AnimationUtils.loadAnimation(mContext, mStaticView.getAnimationRes());
-            mWindowView.startAnimation(animation);
-            animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    removeView();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-
-
-
-        }else {
-            if (!mStaticView.isUseDefaultAnim()) {
-                if (mStaticView.getListener() != null) {
-                    mStaticView.getListener().destory(mWindowView);
-                }
-            } else {
-                removeView();
+        if (mStaticView.isUseSelfAnim()){
+            //使用自定义动画
+            mImageView.setImageBitmap(mWindowView.getBitmap());
+            if (mStaticView.getListener() != null) {
+                mStaticView.getListener().destory(mImageView);
+            }
+        }else{
+            //使用布局标签的属性动画
+           if (mStaticView.getAnimatorRes() != -1){
+                mImageView.setImageBitmap(mWindowView.getBitmap());
+                mAnimator = AnimatorInflater.loadAnimator(mContext, mStaticView.getAnimatorRes());
+                mAnimator.setTarget(mImageView);
+                mAnimator.start();
+                mAnimator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        removeView();
+                    }
+                });
+            }else{
+                //使用默认动画,即图片爆炸
+                mImageView.setBackgroundResource(R.drawable.anim_blow);
+                mAnimationDrawable = (AnimationDrawable) mImageView.getBackground();
+                mAnimationDrawable.start();
+                mImageView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        removeView();
+                    }
+                },getAnimationDrawableTime(mAnimationDrawable));
             }
         }
+
     }
 
-    public void removeView(){
+    public void removeView() {
         if (mWindowManager != null) {
-            if (mContainer.isAttachedToWindow()) {
+            if (mContainer != null && mContainer.isAttachedToWindow()) {
                 mWindowManager.removeView(mContainer);
             }
         }
@@ -199,12 +205,12 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
         mWindowView.setScaleX(1);
         mWindowView.setScaleY(1);
         mWindowView.setVisibility(View.GONE);
-        if (mContainer.getChildCount() > 0) {
+        if (mContainer != null && mContainer.getChildCount() > 0) {
             mContainer.removeView(mWindowView);
         }
     }
 
-    public void removeAnim() {
+    public void clearAnim() {
         if (mWindowView != null) {
             mWindowView.removeAnim();
         }
@@ -218,6 +224,7 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
 
     /**
      * 获取帧动画时间
+     *
      * @param drawable
      * @return
      */

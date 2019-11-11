@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/cus_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="45dp">
+
+        <com.zhengsr.ariesuilib.wieght.bottom.CusBottomLayout
+            android:id="@+id/bottom_ly"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+
+            <com.zhengsr.ariesuilib.wieght.bottom.CusBottomItemView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cus_image_margin_top="4dp"
+                app:cus_image_size="25dp"
+                app:cus_img_normal="@mipmap/home"
+                app:cus_normal_text_color="#8a8a8a"
+                app:cus_selected_text_coclor="#1296db"
+                app:cus_text="首页"
+                app:cus_text_margin_top="2dp"
+                app:cus_isChoose="true"
+                app:cus_change_both="true"
+                app:cus_text_size="11sp" />
+
+            <com.zhengsr.ariesuilib.wieght.bottom.CusBottomItemView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cus_image_margin_top="4dp"
+                app:cus_image_size="25dp"
+                app:cus_img_normal="@mipmap/person"
+                app:cus_normal_text_color="#8a8a8a"
+                app:cus_selected_text_coclor="#1296db"
+                app:cus_text="通讯录"
+                app:cus_text_margin_top="2dp"
+                app:cus_change_both="true"
+                app:cus_text_size="11sp" />
+
+            <com.zhengsr.ariesuilib.wieght.bottom.CusBottomItemView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cus_image_margin_top="4dp"
+                app:cus_image_size="25dp"
+                app:cus_img_normal="@mipmap/find"
+                app:cus_normal_text_color="#8a8a8a"
+                app:cus_selected_text_coclor="#1296db"
+                app:cus_text="发现"
+                app:cus_text_margin_top="2dp"
+                app:cus_change_both="true"
+                app:cus_text_size="11sp" />
+
+            <com.zhengsr.ariesuilib.wieght.bottom.CusBottomItemView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:cus_image_margin_top="4dp"
+                app:cus_image_size="25dp"
+                app:cus_img_normal="@mipmap/sort"
+                app:cus_normal_text_color="#8a8a8a"
+                app:cus_selected_text_coclor="#1296db"
+                app:cus_text="分类"
+                app:cus_change_both="true"
+                app:cus_text_margin_top="2dp"
+                app:cus_text_size="11sp" />
+        </com.zhengsr.ariesuilib.wieght.bottom.CusBottomLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

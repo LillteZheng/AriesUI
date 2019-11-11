@@ -10,7 +10,7 @@ allprojects {
 }
 ```
 ```
-implementation 'com.github.LillteZheng:AriesUI:v1.04'
+implementation 'com.github.LillteZheng:AriesUI:v1.05'
 ```
 ## 颜色选择
 <table  align="center">
@@ -47,3 +47,18 @@ implementation 'com.github.LillteZheng:AriesUI:v1.04'
 
 </table>
 [QQ小红点](https://github.com/LillteZheng/AriesUI/blob/master/README_BezierView.md)
+
+## 底部工具类
+<table  align="center">
+ <tr>
+    <th>Fragment</th>
+    <th>Viewpager</th>
+  </tr>
+   <tr>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/cus_fragment.gif" align="left" height="598" width="354"></a></td>
+     <td><a href="url"><img src="https://github.com/LillteZheng/AriesUI/raw/master/gif/cus_viewpager.gif" align="left" height="598" width="354"></a></td>
+  </tr>
+
+</table>
+[底部工具类](https://github.com/LillteZheng/AriesUI/blob/master/README_BezierView.md)
+

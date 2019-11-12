@@ -98,6 +98,7 @@ public class ColorGradient extends View {
         }
         mDefaultGradient = new LinearGradient(mRect.left, mRect.top, mRect.left, mRect.bottom,
                 Color.WHITE, Color.BLACK, Shader.TileMode.CLAMP);
+
         mChangeGradient = new LinearGradient(mRect.left, mRect.top, mRect.right, mRect.top,
                 Color.WHITE, mDefaultColor, Shader.TileMode.CLAMP);
         ComposeShader shader = new ComposeShader(mDefaultGradient, mChangeGradient, PorterDuff.Mode.MULTIPLY);

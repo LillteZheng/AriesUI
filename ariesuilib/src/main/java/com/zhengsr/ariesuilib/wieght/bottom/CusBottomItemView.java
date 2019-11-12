@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ import com.zhengsr.ariesuilib.R;
  * Created by zhengshaorui on 2018/5/1.
  */
 
-public class CusBottomItemView extends LinearLayout {
+public class CusBottomItemView extends FrameLayout {
     private static final String TAG = "CusBottomItem";
     private ImageView mImageView;
     private TextView mTextView;
@@ -187,10 +188,8 @@ public class CusBottomItemView extends LinearLayout {
      * 设置偏移量
      */
     public void setMargins (View v, int l, int t, int r, int b) {
-        if (v.getLayoutParams() instanceof MarginLayoutParams) {
-            MarginLayoutParams p = (MarginLayoutParams) v.getLayoutParams();
-            p.setMargins(l, t, r, b);
-            v.setLayoutParams(p);
-        }
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) v.getLayoutParams();
+        params.setMargins(l, t, r, b);
+        v.setLayoutParams(params);
     }
 }

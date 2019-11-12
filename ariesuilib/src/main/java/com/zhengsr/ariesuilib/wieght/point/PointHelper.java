@@ -25,7 +25,7 @@ import com.zhengsr.ariesuilib.R;
  */
 class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListener {
     private static final String TAG = "PointHelper";
-    private BezierPointView mStaticView;
+    private BezierPointView mPointView;
     private Context mContext;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mParams;
@@ -38,7 +38,7 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
     private AnimationDrawable mAnimationDrawable;
 
     public PointHelper(BezierPointView view) {
-        mStaticView = view;
+        mPointView = view;
         mContext = view.getContext();
         initWindow();
     }
@@ -62,10 +62,10 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
             mParams.type = type;
             mParams.width = WindowManager.LayoutParams.MATCH_PARENT;
             mParams.height = WindowManager.LayoutParams.MATCH_PARENT;
-            mLayoutParams = new FrameLayout.LayoutParams(mStaticView.getWidth(), mStaticView.getHeight());
+            mLayoutParams = new FrameLayout.LayoutParams(mPointView.getWidth(), mPointView.getHeight());
             //添加小红点
             mWindowView = new BezierPointWindow(mContext);
-            mWindowView.addOriginalView(mStaticView).setWindowType(type);
+            mWindowView.addOriginalView(mPointView).setWindowType(type);
 
             //添加imageview
 
@@ -76,18 +76,18 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        ViewParent parent = v.getParent();
-        if (parent == null) {
-            return false;
-        }
+
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (!mWindowView.isCanMove()) {
                 return false;
             }
-
-            //接管父控件的点击事件
+            ViewParent parent = v.getParent();
+            if (parent == null) {
+                return false;
+            }
+            //接管父控件的touch事件
             parent.requestDisallowInterceptTouchEvent(true);
 
             /**
@@ -97,10 +97,12 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
 
             addPointToWindow();
         }
-
         return mWindowView.onTouchEvent(event);
     }
 
+    /**
+     * 把TextView 的缓存bitmap给BezierPointWindow绘制
+     */
     private void addPointToWindow() {
 
         if (mContainer == null) {
@@ -113,31 +115,33 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
         mContainer.addView(mWindowView, mParams);
         mWindowManager.addView(mContainer, mParams);
         //初始化坐标
-        mStaticView.getLocationInWindow(mPos);
-        int width = mStaticView.getWidth();
-        int height = mStaticView.getHeight();
+        mPointView.getLocationInWindow(mPos);
+        int width = mPointView.getWidth();
+        int height = mPointView.getHeight();
 
         //设置大小和起始位置
         mWindowView.initPoint(mPos[0] + width / 2, mPos[1] + height / 2);
         mWindowView.setPointListener(this);
         mWindowView.setVisibility(View.VISIBLE);
         //拿到bitmap
-        mStaticView.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(mStaticView.getDrawingCache());
-        mStaticView.setDrawingCacheEnabled(false);
+        mPointView.setDrawingCacheEnabled(true);
+        //拿到TextView的缓存bitmap，给BezierPointWindow 绘制，也为后面up的 imageview 当做背景图
+        Bitmap bitmap = Bitmap.createBitmap(mPointView.getDrawingCache());
+        mPointView.setDrawingCacheEnabled(false);
         mWindowView.setBitmap(bitmap);
     }
 
     @Override
-    public void onStart() {
-        //这个时候，一开始的view，开始消失了
-        mStaticView.setVisibility(View.GONE);
+    public void onDrawReady() {
+        //这个时候，可以消失了，避免闪烁
+        mPointView.setVisibility(View.GONE);
     }
 
     @Override
     public void drawUp() {
-        mStaticView.setVisibility(View.VISIBLE);
-        mStaticView.postDelayed(new Runnable() {
+        mPointView.setVisibility(View.VISIBLE);
+        //有点延时，避免闪烁
+        mPointView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 removeView();
@@ -152,20 +156,20 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
         //添加imageview，用于动画
         mContainer.addView(mImageView, mLayoutParams);
         //指定初始位置
-        mImageView.setX(pointF.x - mStaticView.getWidth() * 1.0f / 2);
-        mImageView.setY(pointF.y - mStaticView.getHeight() * 1.0f / 2);
+        mImageView.setX(pointF.x - mPointView.getWidth() * 1.0f / 2);
+        mImageView.setY(pointF.y - mPointView.getHeight() * 1.0f / 2);
 
-        if (mStaticView.isUseSelfAnim()){
+        if (mPointView.isUseSelfAnim()){
             //使用自定义动画
             mImageView.setImageBitmap(mWindowView.getBitmap());
-            if (mStaticView.getListener() != null) {
-                mStaticView.getListener().destory(mImageView);
+            if (mPointView.getListener() != null) {
+                mPointView.getListener().destory(mImageView);
             }
         }else{
             //使用布局标签的属性动画
-           if (mStaticView.getAnimatorRes() != -1){
+           if (mPointView.getAnimatorRes() != -1){
                 mImageView.setImageBitmap(mWindowView.getBitmap());
-                mAnimator = AnimatorInflater.loadAnimator(mContext, mStaticView.getAnimatorRes());
+                mAnimator = AnimatorInflater.loadAnimator(mContext, mPointView.getAnimatorRes());
                 mAnimator.setTarget(mImageView);
                 mAnimator.start();
                 mAnimator.addListener(new AnimatorListenerAdapter() {
@@ -191,6 +195,9 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
 
     }
 
+    /**
+     * 移除View，这个必须要实现，否则就有一层view在顶层，啥也操作不了
+     */
     public void removeView() {
         if (mWindowManager != null) {
             if (mContainer != null && mContainer.isAttachedToWindow()) {
@@ -218,6 +225,9 @@ class PointHelper implements View.OnTouchListener, BezierPointWindow.PointListen
             mAnimator.removeAllListeners();
             mAnimator.end();
             mAnimator.cancel();
+        }
+        if (mAnimationDrawable != null) {
+            mAnimationDrawable.stop();
         }
 
     }

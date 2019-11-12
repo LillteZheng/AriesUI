@@ -31,18 +31,25 @@ class BezierPointWindow extends View {
     private boolean mIsBreakUp;
     private int mBarHeight = 0;
     private float mBitmapWidth, mBitmapHeight;
-    private Bitmap mOriginalBitmap;
-    private float mDefaultRadius;
-    private boolean mIsCanMove;
-    private float mMaxMoveLength;
-    private float mRecoveryBound;
-    private float mDrawRadius;
+
     private ValueAnimator mBackAnim;
     private PointListener mPointListener;
 
+    /**
+     * attrs
+     */
+    private float mDefaultRadius;
+    private float mMaxMoveLength;
+    private float mRecoveryBound;
+    private float mDrawRadius;
+    /**
+     * logic
+     */
+    private Bitmap mOriginalBitmap;
     private boolean mDrawBitmap;
     private boolean mIsCanStart;
     private boolean mNotifyOutToRemove;
+    private boolean mIsCanMove;
 
 
 
@@ -87,20 +94,24 @@ class BezierPointWindow extends View {
         super.onDraw(canvas);
 
         if (mDrawBitmap) {
-           //todo
+           //todo 绘制图片的效果交给外面的imageview
         } else {
             if (!mIsBreakUp) {
+                //绘制贝塞尔曲线
                 calculateBeizer();
                 canvas.drawPath(mPath, mPaint);
+                //绘制小球
                 canvas.drawCircle(mStartPoint.x, mStartPoint.y, mDrawRadius, mPaint);
             }
+            //绘制 TextView 的bitmap
             canvas.drawBitmap(mOriginalBitmap, mMovePoint.x - mBitmapWidth,
                     mMovePoint.y - mBitmapHeight, null);
         }
 
+        //提醒外部，可以移除BezierPointView 了
         if (!mNotifyOutToRemove && mOriginalBitmap != null){
             mNotifyOutToRemove = true;
-            mPointListener.onStart();
+            mPointListener.onDrawReady();
         }
     }
 
@@ -119,7 +130,7 @@ class BezierPointWindow extends View {
 
 
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mIsCanStart) {
+        if (!mIsCanStart || !mIsCanMove) {
             return true;
         }
         switch (event.getAction()) {
@@ -204,6 +215,7 @@ class BezierPointWindow extends View {
         float offsetx0 = (float) (mDrawRadius * Math.sin(a));
         float offsety0 = (float) (mDrawRadius * Math.cos(a));
 
+        //拿到第二个小球的偏移量
         float offsetx = (float) (mDefaultRadius * Math.sin(a));
         float offsety = (float) (mDefaultRadius * Math.cos(a));
 
@@ -246,7 +258,6 @@ class BezierPointWindow extends View {
             return;
         }
 
-
     }
 
     public void setWindowType(int type) {
@@ -273,7 +284,7 @@ class BezierPointWindow extends View {
         /**
          * 此时可以移除外面的view
          */
-        void onStart();
+        void onDrawReady();
     }
 
 
@@ -292,6 +303,10 @@ class BezierPointWindow extends View {
     }
 
 
+    /**
+     * 设置TextView的bitmap，这样就可以绘制了
+     * @param bitmap
+     */
     public void setBitmap(Bitmap bitmap) {
         mNotifyOutToRemove = false;
         mOriginalBitmap = bitmap;
@@ -317,6 +332,9 @@ class BezierPointWindow extends View {
 
     }
 
+    /**
+     * 自定义一个 Evaluator
+     */
     class PointFEvaluator implements TypeEvaluator<PointF> {
         private static final String TAG = "PointFEvaluator";
         PointF pointF = new PointF();

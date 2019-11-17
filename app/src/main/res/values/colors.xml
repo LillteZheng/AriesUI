@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#8FF59C</color>
+    <color name="colorPrimary">#458EFD</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#458EFD</color>
     <color name="test">#FF6E6E6E</color>
-    <color name="green">#458EFD</color>
+    <color name="main_color">#458EFD</color>
     <color name="start_color">#2033E273</color>
     <color name="end_color">#20ffffff</color>
+    <color name="wechat">#323232</color>
 </resources>

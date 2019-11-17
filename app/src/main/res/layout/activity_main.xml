@@ -23,11 +23,17 @@
         android:layout_height="wrap_content"
         android:text="QQ小红点"
         android:onClick="beizerPoint"/>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="底部导航栏"
         android:onClick="bottom"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="弧形、圆形与封装的EditText"
+        android:onClick="login"/>
 
 </LinearLayout>

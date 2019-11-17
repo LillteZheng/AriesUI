@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.zhengsr.ariesui.activity.BeizerActivity;
+import com.zhengsr.ariesui.activity.LoginActivity;
 import com.zhengsr.ariesui.activity.bottom.BottomActivity;
 import com.zhengsr.ariesui.activity.ColorActivity;
 import com.zhengsr.ariesui.activity.ScanViewActivity;
@@ -37,5 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void bottom(View view) {
         startActivity(new Intent(this, BottomActivity.class));
+    }
+
+    public void login(View view) {
+        startActivity(new Intent(this, LoginActivity.class));
     }
 }

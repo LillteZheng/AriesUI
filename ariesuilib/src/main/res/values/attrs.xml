@@ -71,4 +71,30 @@
         <attr name="cus_not_change_img" format="boolean"/>
         <attr name="cus_change_both" format="boolean"/>
     </declare-styleable>
+
+
+    <!--弧形图片-->
+    <declare-styleable name="ArcImageView">
+        <attr name="arc_height" format="dimension"/> <!--弧度的高度-->
+        <attr name="arc_blur" format="integer"/>
+        <attr name="arc_use_color" format="color|reference"/>
+        <attr name="arc_scaleX" format="dimension"/>
+        <attr name="arc_scaleY" format="dimension"/>
+        <attr name="arc_scaleFactor" format="float"/>
+        <attr name="arc_auto_fix" format="boolean"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="CircleImageView">
+        <attr name="cv_boardColor" format="color|reference"/>
+        <attr name="cv_borderWidth" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="InputView">
+        <attr name="iv_edTextColor" format="color|reference"/>
+        <attr name="iv_edHintColor" format="color|reference"/>
+        <attr name="iv_edTextSize" format="dimension"/>
+        <attr name="iv_bottomColor" format="color|reference"/>
+        <attr name="iv_bottomSize" format="dimension"/>
+    </declare-styleable>
 </resources>

@@ -20,4 +20,12 @@
         <!--水滴显示和消失的速度-->
         <attr name="flicker" format="float" />
     </declare-styleable>
+
+    <declare-styleable name="InputView">
+        <attr name="iv_edTextColor" format="color|reference"/>
+        <attr name="iv_edHintColor" format="color|reference"/>
+        <attr name="iv_edTextSize" format="dimension"/>
+        <attr name="iv_bottomColor" format="color|reference"/>
+        <attr name="iv_bottomSize" format="dimension"/>
+    </declare-styleable>
 </resources>

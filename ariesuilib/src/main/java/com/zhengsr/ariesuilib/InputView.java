@@ -32,6 +32,8 @@ public abstract class InputView extends FrameLayout implements View.OnFocusChang
     private ImageView[] mLeftImages;
     protected EditText mEditText;
     private ImageView[] mRightImages;
+    private View mBottomView;
+    private int mHintColor;
 
 
     public InputView(Context context) {
@@ -50,7 +52,7 @@ public abstract class InputView extends FrameLayout implements View.OnFocusChang
         //左边ImageView
         //EditText
         int textColor = ta.getColor(com.zhengsr.ariesuilib.R.styleable.InputView_iv_edTextColor, Color.BLUE);
-        int hintColor = ta.getColor(com.zhengsr.ariesuilib.R.styleable.InputView_iv_edHintColor, Color.parseColor("#999999"));
+        mHintColor = ta.getColor(R.styleable.InputView_iv_edHintColor, Color.parseColor("#999999"));
         int textSize = ta.getDimensionPixelSize(com.zhengsr.ariesuilib.R.styleable.InputView_iv_edTextSize, 14);
         //底部Bottom
         mBottomColor = ta.getColor(com.zhengsr.ariesuilib.R.styleable.InputView_iv_bottomColor, Color.BLUE);
@@ -104,7 +106,7 @@ public abstract class InputView extends FrameLayout implements View.OnFocusChang
         mEditText.setBackgroundColor(Color.TRANSPARENT);
         mEditText.setSingleLine();
         mEditText.setTextColor(textColor);
-        mEditText.setHintTextColor(hintColor);
+        mEditText.setHintTextColor(mHintColor);
         mEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
         mEditText.setOnFocusChangeListener(this);
@@ -112,12 +114,12 @@ public abstract class InputView extends FrameLayout implements View.OnFocusChang
         addView(mEditText, edParams);
 
         //配置下划线大小和颜色
-        View view = new View(context);
+        mBottomView = new View(context);
         LayoutParams viewParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 bottomSize);
         viewParams.gravity = Gravity.BOTTOM;
-        view.setBackgroundColor(mBottomColor);
-        addView(view, viewParams);
+        mBottomView.setBackgroundColor(mHintColor);
+        addView(mBottomView, viewParams);
 
         config();
     }
@@ -138,8 +140,10 @@ public abstract class InputView extends FrameLayout implements View.OnFocusChang
             for (ImageView image : mLeftImages) {
                 if (hasFocus) {
                     image.setColorFilter(mBottomColor);
+                    mBottomView.setBackgroundColor(mBottomColor);
                 } else {
                     image.clearColorFilter();
+                    mBottomView.setBackgroundColor(mHintColor);
                 }
             }
         }

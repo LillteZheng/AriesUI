@@ -13,56 +13,15 @@
         android:onClick="add"
         android:text="添加"/>
 
-    <com.zhengsr.ariesuilib.wieght.FlowLayout
+    <com.zhengsr.ariesuilib.wieght.flow.TagFlowLayout
         android:id="@+id/flowlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:background="#323222"
         >
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
-
-        <Button
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="#00f200"
-            android:text="wo shi textview" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1" />
-
-    </com.zhengsr.ariesuilib.wieght.FlowLayout>
+    </com.zhengsr.ariesuilib.wieght.flow.TagFlowLayout>
 
 </LinearLayout>

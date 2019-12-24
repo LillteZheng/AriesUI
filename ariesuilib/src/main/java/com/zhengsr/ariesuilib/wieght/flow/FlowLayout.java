@@ -1,4 +1,4 @@
-package com.zhengsr.ariesuilib.wieght;
+package com.zhengsr.ariesuilib.wieght.flow;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -92,7 +92,7 @@ public class FlowLayout extends ViewGroup {
                  * 确定是否换行
                  */
 
-                if (lineWidth + cWidth > widthSize) {
+                if (lineWidth + cWidth > widthSize - (getPaddingLeft() + getPaddingRight())) {
                     //换行
                     height += lineHeight;
 
@@ -122,7 +122,9 @@ public class FlowLayout extends ViewGroup {
             if (heightMode == MeasureSpec.AT_MOST) {
                 height = Math.min(height, heightSize);
             }
+            height += getPaddingBottom() + getPaddingTop();
         }
+
         //把测量完成的宽高，重新 设置给父控件
         setMeasuredDimension(widthSize, height);
     }
@@ -136,8 +138,8 @@ public class FlowLayout extends ViewGroup {
          * 这些数据从onMeasure 中已经计算好了，所以，只需要把值拿到就可以了
          */
         int size = mAllViews.size();
-        int left = 0;
-        int top = 0;
+        int left = getPaddingLeft();
+        int top = getPaddingTop();
         for (int i = 0; i < size; i++) {
             List<View> lineViews = mAllViews.get(i);
             for (View lineView : lineViews) {
@@ -152,7 +154,7 @@ public class FlowLayout extends ViewGroup {
                 lineView.layout(cl, ct, cr, cb);
                 left += cWidth + params.leftMargin + params.rightMargin;
             }
-            left = 0;
+            left = getPaddingLeft();
             top += mLineHeights.get(i);
         }
     }

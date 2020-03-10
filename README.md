@@ -10,7 +10,7 @@ allprojects {
 }
 ```
 ```
-implementation 'com.github.LillteZheng:AriesUI:v1.09'
+implementation 'com.github.LillteZheng:AriesUI:v1.10'
 ```
 ## 效果图
 <table  align="center">

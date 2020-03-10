@@ -21,6 +21,7 @@
         android:layout_height="200dp"
         android:layout_margin="10dp"
         app:gra_circle_radius="5dp"
+        app:gra_bg_radius="3dp"
         app:gra_default_color="#ff0000"/>
     <!-- 自动根据长宽选择方向-->
     <com.zhengsr.ariesuilib.wieght.colors.MultiColors

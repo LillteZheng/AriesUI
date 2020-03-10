@@ -4,6 +4,7 @@
         <attr name="gra_default_color" format="color|reference|integer"/>
         <attr name="gra_circle_radius" format="integer|dimension"/>
         <attr name="gra_circle_color" format="color|reference"/>
+        <attr name="gra_bg_radius" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="MultiColors">
@@ -20,6 +21,7 @@
         </attr>
         <attr name="mul_tri_size" format="dimension|integer"/>
         <attr name="mul_tri_show_line" format="boolean"/>
+        <attr name="mul_bg_radius" format="dimension"/>
 
     </declare-styleable>
 

@@ -3,6 +3,7 @@ package com.zhengsr.ariesuilib.wieght.colors;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -55,6 +56,8 @@ public class MultiColors extends View {
     private Path mPath;
     private Path mLinePath;
     private Paint mLinePaint;
+    private Paint mBitPaint;
+    private RectF mBitRectf;
 
     /**
      * attrs
@@ -63,6 +66,7 @@ public class MultiColors extends View {
     private int mTriOritation;
     private int mTriSize;
     private boolean mShowTriLine;
+    private int mBgRadius;
 
 
     public MultiColors(Context context) {
@@ -82,6 +86,7 @@ public class MultiColors extends View {
         mTriOritation = ta.getInteger(R.styleable.MultiColors_mul_tri_oritation, LEFT);
         mTriSize = ta.getDimensionPixelSize(R.styleable.MultiColors_mul_tri_size,14);
         mShowTriLine = ta.getBoolean(R.styleable.MultiColors_mul_tri_show_line,false);
+        mBgRadius = ta.getDimensionPixelSize(R.styleable.MultiColors_mul_bg_radius,0);
         ta.recycle();
 
         mPaint = new Paint();
@@ -99,6 +104,13 @@ public class MultiColors extends View {
         mLinePaint.setAntiAlias(true);
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setColor(typeColor);
+
+        mBitPaint = new Paint();
+        mBitPaint.setAntiAlias(true);
+        mBitPaint.setFilterBitmap(true);
+        mBitRectf = new RectF();
+
+
 
     }
 
@@ -179,6 +191,9 @@ public class MultiColors extends View {
             }
         }
 
+        mBitRectf.set(0,0,mWidth,mHeight);
+        mBitPaint.setShader(new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+
     }
     
 
@@ -216,7 +231,8 @@ public class MultiColors extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(mBitmap, 0, 0, null);
+       // canvas.drawBitmap(mBitmap, 0, 0, null);
+        canvas.drawRoundRect(mBitRectf,mBgRadius,mBgRadius,mBitPaint);
         canvas.save();
         if (mIsVertical) {
             canvas.translate(0, mMove);

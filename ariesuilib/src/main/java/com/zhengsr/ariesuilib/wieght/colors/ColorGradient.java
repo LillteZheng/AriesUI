@@ -3,6 +3,7 @@ package com.zhengsr.ariesuilib.wieght.colors;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ComposeShader;
@@ -10,6 +11,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -35,6 +37,7 @@ public class ColorGradient extends View {
      */
     private int mDefaultColor;
     private int mCircleRadius;
+    private int mBgRadius;
     /**
      * logic
      */
@@ -51,6 +54,8 @@ public class ColorGradient extends View {
     private Rect mRect;
     private LinearGradient mDefaultGradient;
     private LinearGradient mChangeGradient;
+    private Paint mBitmapPaint;
+    private RectF mBitmapRect;
 
     public ColorGradient(Context context) {
         this(context, null);
@@ -67,6 +72,7 @@ public class ColorGradient extends View {
         mDefaultColor = ta.getColor(R.styleable.ColorGradient_gra_default_color, Color.YELLOW);
         mCircleRadius = ta.getDimensionPixelSize(R.styleable.ColorGradient_gra_circle_radius, 20);
         int circleColor = ta.getColor(R.styleable.ColorGradient_gra_circle_color,Color.WHITE);
+        mBgRadius = ta.getDimensionPixelSize(R.styleable.ColorGradient_gra_bg_radius,0);
         ta.recycle();
 
         setClickable(true);
@@ -81,6 +87,8 @@ public class ColorGradient extends View {
         mCirclePaint.setStrokeWidth(3);
         mCirclePaint.setColor(circleColor);
         mCirclePaint.setStyle(Paint.Style.STROKE);
+
+        mBitmapRect = new RectF();
     }
 
 
@@ -89,12 +97,12 @@ public class ColorGradient extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         mRect = new Rect(0, 0, w, h);
         if (mCx == -1) {
-            mCx = mRect.right;
+            mCx = mRect.right - 2 * mCircleRadius;
         } else {
             mCx = mCx * w / mLastWidth;
         }
         if (mCy == -1) {
-            mCy = mRect.top;
+            mCy = mRect.top + 2 * mCircleRadius;
         }
         mDefaultGradient = new LinearGradient(mRect.left, mRect.top, mRect.left, mRect.bottom,
                 Color.WHITE, Color.BLACK, Shader.TileMode.CLAMP);
@@ -112,13 +120,23 @@ public class ColorGradient extends View {
         if (mListener != null) {
             mListener.readyToShow(mCurrentColor);
         }
+        mBitmapPaint = new Paint();
+        mBitmapPaint.setAntiAlias(true);
+
+        mBitmapPaint.setFilterBitmap(true);
+        mBitmapPaint.setShader(new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+
+        mBitmapRect.set(0,0,mWidth,mHeight);
 
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(mBitmap, 0, 0, null);
+
+        canvas.save();
+        canvas.drawRoundRect(mBitmapRect, mBgRadius, mBgRadius, mBitmapPaint);
+        canvas.restore();
         //画小球
         canvas.drawCircle(mCx, mCy, mCircleRadius, mCirclePaint);
 
